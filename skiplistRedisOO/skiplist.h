@@ -1,103 +1,121 @@
 #pragma once
 #include <stdlib.h> 
 #include <time.h> 
-#define skipLIST_MAXLEVEL 32
-#define skipLIST_P 0.25 
-
-typedef struct redisObject {
-    void* ptr;
-} robj;
-bool compareObjects (robj* a, robj* b) {
-    return a < b;
-}
-bool equalObjects (robj* a, robj* b) {
-    return a < b;
-}
-
-template<typename K, typename E>
-class skiplistNode;
-template<typename K, typename E>
-class skiplistLevel {
-public:
-    // 前进指针
-    skiplistNode<K, E>* forward;
-    // 节点在该层和前向节点的距离
-    unsigned long long span;
-};
-
-/* ZSETs use a specialized version of Skiplists */
-template<typename K, typename E>
-class skiplistNode {
-public:
-    // member 对象
-    E data;
-    // 分值
-    K score;
-    // 后退指针
-    skiplistNode<K, E>* backward;
-    // 层
-    skiplistLevel<K, E> level[skipLIST_MAXLEVEL];
-};
 
 template<typename K, typename E>
 class skiplist {
+public:
+
+    static const int _SKIPLIST_MAXLEVEL = 32;
+    static const int _SKIPLIST_P = 0.25;
+
+    template<typename K, typename E>
+    class skiplistNode {
+    public:
+        E data;// member 对象
+        K score;// 分值
+        skiplistNode<K, E>* backward;// 后退指针
+        template<typename K, typename E>
+        class skiplistLevel {
+        public:
+            skiplistNode<K, E>* forward; // 前进指针
+            unsigned long long span; // 节点在该层和前向节点的距离。可用于获取元素排名
+        };
+        skiplistLevel<K, E> level[_SKIPLIST_MAXLEVEL];// 层
+    };
 protected:
-
-
-    // 头节点，尾节点
     skiplistNode<K, E>* _header;//指向空头
     skiplistNode<K, E>* _tail;//指向有数据的尾部
-    // 节点数量
-    unsigned long _length;
-    // 目前表内节点的最大层数
-    long long _level;
+    unsigned long _length;// 节点数量
+    int _level;// 目前表内节点的最大层数
 
-    long long _skiplistRandomLevel () {
+    int _getRandomLevel () {
         srand ((unsigned)time (nullptr));
-        long long level = 1;
-        while ((rand () & 0xFFFF) < (skipLIST_P * 0xFFFF))
+        int  level = 1;
+        while ((rand () & 0xFFFF) < (_SKIPLIST_P * 0xFFFF))
             level += 1;
-        return (level < skipLIST_MAXLEVEL) ? level : skipLIST_MAXLEVEL;
+        return (level < _SKIPLIST_MAXLEVEL) ? level : _SKIPLIST_MAXLEVEL;
     }
-    skiplistNode<K, E>* _skiplistCreateNode (long long level, K score, E ele) {
+
+    skiplistNode<K, E>* _createNode (int  level, K score, E ele) {
         skiplistNode<K, E>* zn = new skiplistNode<K, E>;
-        //(skiplistNode<K,E>*)malloc (sizeof (*zn) + level * sizeof (struct skiplistLevel));
         zn->score = score;
         zn->data = ele;
         return zn;
     }
 
-    skiplistNode<K, E>* _skiplistCreateNode (long long level) {
+    skiplistNode<K, E>* _createNode (int  level) {
         skiplistNode<K, E>* zn = new skiplistNode<K, E>;
         return zn;
     }
+    /* long longernal function used by skiplistDelete, deleteByScore and skiplistDeleteByRank */
+/*****************************************************************************
+ * 函 数 名  : skiplistDeleteNode
+ * 函数功能  : 内置功能函数，被skiplistDelete等函数调用
+ * 输入参数  : skiplist *skiplist          链表头指针
+               skiplistNode *x        待删除节点指针
+               skiplistNode **update  带删除节点的前一节点地址的指针
+ * 输出参数  : 无
+ * 返 回 值  :
+ * 调用关系  :
+ * 记    录
+ * 1.日    期: 2017年06月24日
+ *   作    者:
+ *   修改内容: 新生成函数
+*****************************************************************************/
+    void _skiplistDeleteNode (skiplistNode<K, E>* x, skiplistNode<K, E>** update) {
+        long long i;
+        for (i = 0; i < this->_level; i++) {
+            //如果待更新节点（待删除节点的前一节点）的后继节点是待删除节点，则需要处理待更新节点的后继指针
+            if (update[i]->level[i].forward == x) {
+                update[i]->level[i].span += x->level[i].span - 1;
+
+                //这里有可能为nullptr，比如删除最后一个节点
+                update[i]->level[i].forward = x->level[i].forward;
+
+                //待删除节点没有出现在此层--跨度减1即可
+            } else {
+                update[i]->level[i].span -= 1;
+            }
+        }
+        //处理待删除节点的后一节点（如果存在的话）
+        if (x->level[0].forward) {
+            x->level[0].forward->backward = x->backward;
+        } else {
+            this->_tail = x->backward;
+        }
+        //跳跃表的层数处理，如果表头层级的前向指针为空，说明这一层已经没有元素，层数要减一
+        while (this->_level > 1 && this->_header->level[this->_level - 1].forward == nullptr)
+            this->_level--;
+
+        //跳跃表长度减一
+        this->_length--;
+
+
+        //free (x);
+        delete x;
+    }
+
 public:
 
-    /*****************************************************************************
-    * 函 数 名  : skiplistCreate
-    * 函数功能  : 创建新的跳跃表
-    * 输入参数  : void
-    * 输出参数  : 无
-    * 返 回 值  : skiplist
-   *****************************************************************************/
-    explicit skiplist (K MIN, E NODATA) {
-        long long j;
+    //explicit skiplist (K MIN, E NODATA) {
+    //    long long j;
 
-        // 初始化跳跃表属性,层数初始化为1，长度初始化为0
-        this->_level = 1;
-        this->_length = 0;
+    //    // 初始化跳跃表属性,层数初始化为1，长度初始化为0
+    //    this->_level = 1;
+    //    this->_length = 0;
 
-        // 创建一个层数为32，分值为0，成员对象为nullptr的表头结点
-        this->_header = _skiplistCreateNode (skipLIST_MAXLEVEL, MIN, NODATA);
-        for (j = 0; j < skipLIST_MAXLEVEL; j++) {
-            // 设定每层的forward指针指向nullptr
-            this->_header->level[j].forward = nullptr;
-            this->_header->level[j].span = 0;
-        }
-        // 设定backward指向nullptr
-        this->_header->backward = nullptr;
-        this->_tail = nullptr;
-    }
+    //    // 创建一个层数为32，分值为0，成员对象为nullptr的表头结点
+    //    this->_header = _createNode (_SKIPLIST_MAXLEVEL, MIN, NODATA);
+    //    for (j = 0; j < _SKIPLIST_MAXLEVEL; j++) {
+    //        // 设定每层的forward指针指向nullptr
+    //        this->_header->level[j].forward = nullptr;
+    //        this->_header->level[j].span = 0;
+    //    }
+    //    // 设定backward指向nullptr
+    //    this->_header->backward = nullptr;
+    //    this->_tail = nullptr;
+    //}
     explicit skiplist () {
         long long j;
 
@@ -106,8 +124,8 @@ public:
         this->_length = 0;
 
         // 创建一个层数为32，分值为0，成员对象为nullptr的表头结点
-        this->_header = _skiplistCreateNode (skipLIST_MAXLEVEL);
-        for (j = 0; j < skipLIST_MAXLEVEL; j++) {
+        this->_header = _createNode (_SKIPLIST_MAXLEVEL);
+        for (j = 0; j < _SKIPLIST_MAXLEVEL; j++) {
             // 设定每层的forward指针指向nullptr
             this->_header->level[j].forward = nullptr;
             this->_header->level[j].span = 0;
@@ -117,22 +135,18 @@ public:
         this->_tail = nullptr;
     }
 
-    bool empty () {
-        return _length == 0;
-    }
-    E* getMin () {
-        if (empty ())return nullptr;
-
-        if (_header) {
-            if (_header->level[0].forward) {
-                return &_header->level[0].forward->data;
-            }
-        }
-        return nullptr;
-    }
+    bool empty () { return _length == 0; }
+    //E* getMin () {
+    //    if (empty ())return nullptr;
+    //    if (_header) {
+    //        if (_header->level[0].forward) {
+    //            return &_header->level[0].forward->data;
+    //        }
+    //    }
+    //    return nullptr;
+    //}
     K* getMinScore () {
         if (empty ())return nullptr;
-
         if (_header) {
             if (_header->level[0].forward) {
                 return &_header->level[0].forward->score;
@@ -144,22 +158,16 @@ public:
         if (empty ())return nullptr;
         if (_tail) {
             return &_tail->score;
-            //if (_tail->backward) {
-            //    return &_tail->backward->data;
-            //}
         }
         return nullptr;
     }
-    E* getMax () {
-        if (empty ())return nullptr;
-        if (_tail) {
-            return &_tail->data;
-            //if (_tail->backward) {
-            //    return &_tail->backward->data;
-            //}
-        }
-        return nullptr;
-    }
+    //E* getMax () {
+    //    if (empty ())return nullptr;
+    //    if (_tail) {
+    //        return &_tail->data;
+    //    }
+    //    return nullptr;
+    //}
     /*****************************************************************************
  * 函 数 名  : insert
  * 函数功能  : 插入新节点
@@ -171,11 +179,11 @@ public:
 *****************************************************************************/
     skiplistNode<K, E>* insert (double score, E data) {
         // updata[]数组记录每一层位于插入节点的前一个节点
-        skiplistNode<K, E>* update[skipLIST_MAXLEVEL];
+        skiplistNode<K, E>* update[_SKIPLIST_MAXLEVEL];
 
         // rank[]记录每一层位于插入节点的前一个节点的排名
         //在查找某个节点的过程中，将沿途访问过的所有层的跨度累计起来，得到的结果就是目标节点在跳跃表中的排位
-        unsigned long long rank[skipLIST_MAXLEVEL];
+        unsigned long long rank[_SKIPLIST_MAXLEVEL];
 
         long long i, level;
 
@@ -211,7 +219,7 @@ public:
 
          // 此处假设插入节点的成员对象不存在于当前跳跃表内，即不存在重复的节点
          // 随机生成一个level值
-        level = _skiplistRandomLevel ();
+        level = _getRandomLevel ();
 
 
         // 如果level大于当前存储的最大level值
@@ -234,7 +242,7 @@ public:
         }
 
         // 创建插入节点
-        x = _skiplistCreateNode (level, score, data);
+        x = _createNode (level, score, data);
         for (i = 0; i < level; i++) {
 
             // 针对跳跃表的每一层，改变其forward指针的指向
@@ -298,55 +306,12 @@ public:
         return x;
     }
 
-    /* long longernal function used by skiplistDelete, skiplistDeleteByScore and skiplistDeleteByRank */
-    /*****************************************************************************
-     * 函 数 名  : skiplistDeleteNode
-     * 函数功能  : 内置功能函数，被skiplistDelete等函数调用
-     * 输入参数  : skiplist *skiplist          链表头指针
-                   skiplistNode *x        待删除节点指针
-                   skiplistNode **update  带删除节点的前一节点地址的指针
-     * 输出参数  : 无
-     * 返 回 值  :
-     * 调用关系  :
-     * 记    录
-     * 1.日    期: 2017年06月24日
-     *   作    者:
-     *   修改内容: 新生成函数
-    *****************************************************************************/
-    void _skiplistCutDownNode (skiplist<K, E>* skiplist, skiplistNode<K, E>* x, skiplistNode<K, E>** update) {
-        long long i;
-        for (i = 0; i < skiplist->_level; i++) {
-            //如果待更新节点（待删除节点的前一节点）的后继节点是待删除节点，则需要处理待更新节点的后继指针
-            if (update[i]->level[i].forward == x) {
-                update[i]->level[i].span += x->level[i].span - 1;
-
-                //这里有可能为nullptr，比如删除最后一个节点
-                update[i]->level[i].forward = x->level[i].forward;
-
-                //待删除节点没有出现在此层--跨度减1即可
-            } else {
-                update[i]->level[i].span -= 1;
-            }
-        }
-        //处理待删除节点的后一节点（如果存在的话）
-        if (x->level[0].forward) {
-            x->level[0].forward->backward = x->backward;
-        } else {
-            skiplist->_tail = x->backward;
-        }
-        //跳跃表的层数处理，如果表头层级的前向指针为空，说明这一层已经没有元素，层数要减一
-        while (skiplist->_level > 1 && skiplist->_header->level[skiplist->_level - 1].forward == nullptr)
-            skiplist->_level--;
-
-        //跳跃表长度减一
-        skiplist->_length--;
-    }
 
 
     /* Delete all the elements with rank between start and end from the skiplist.
      * Start and end are inclusive. Note that start and end need to be 1-based */
      /*****************************************************************************
-      * 函 数 名  : skiplistDeleteRangeByRank
+      * 函 数 名  : deleteRangeByRank
       * 函数功能  : 根据提供的排名起始和结尾删除节点
       * 输入参数  : skiplist *skiplist      跳跃表指针
                     unsigned long long start  排名起始
@@ -360,8 +325,8 @@ public:
       *   作    者: zyz
       *   修改内容: 新生成函数
      *****************************************************************************/
-    unsigned long skiplistDeleteRangeByRank (unsigned long long start, unsigned long long end) {
-        skiplistNode<K, E>* update[skipLIST_MAXLEVEL], * x;
+    unsigned long deleteRangeByRank (unsigned long long start, unsigned long long end) {
+        skiplistNode<K, E>* update[_SKIPLIST_MAXLEVEL], * x;
         unsigned long traversed = 0, removed = 0;
         long long i;
 
@@ -383,9 +348,8 @@ public:
         while (x && traversed <= end) {
             //逐个删除后继节点,直到end为止
             skiplistNode<K, E>* next = x->level[0].forward;
-            _skiplistCutDownNode (this, x, update);
-            //free (x);
-            delete x;
+            _skiplistDeleteNode (x, update);
+
             removed++;
             //每删除一个节点,排名加1
             traversed++;
@@ -394,8 +358,8 @@ public:
         return removed;
     }
 
-    long long skiplistDeleteByScore (double score) {
-        skiplistNode<K, E>* update[skipLIST_MAXLEVEL], * x;
+    bool deleteByScore (double score) {
+        skiplistNode<K, E>* update[_SKIPLIST_MAXLEVEL], * x;
         long long i;
 
         x = this->_header;
@@ -415,12 +379,10 @@ public:
         x = x->level[0].forward;
 
         if (x && score == x->score) {
-            _skiplistCutDownNode (this, x, update);
-            //free (x);
-            delete x;
-            return 1;
+            _skiplistDeleteNode (x, update);
+            return true;
         }
-        return 0; /* not found */
+        return false; /* not found */
     }
     /* Find the rank for an element by both score and key.
     * Returns 0 when the element cannot be found, rank otherwise.
@@ -440,7 +402,7 @@ public:
      *   作    者: zyz
      *   修改内容: 新生成函数
     *****************************************************************************/
-    E* skiplistGetDataByScore (double score) {
+    E* getDataByScore (double score) {
         if (empty ())return nullptr;
         if (score < _header->level[0].forward->score)return nullptr;
         if (_tail && score > _tail->score)return nullptr;

@@ -1,5 +1,3 @@
-
-
 #include<string>
 #include"skiplist.h"
 #include<iostream>
@@ -48,7 +46,7 @@ int main () {
         if (a == 1) {
             long long b;
             cin >> b;
-            string* p = z.skiplistGetDataByScore (b);
+            string* p = z.getDataByScore (b);
             if (p) {
                 cout << *p;
             } else {
@@ -64,35 +62,35 @@ int main () {
         } else if (a == 3) {
             long long b;
             cin >> b;
-            string* p = z.skiplistGetDataByScore (b);
+            string* p = z.getDataByScore (b);
             if (p) {
                 cout << b << " " << *p;
-                z.skiplistDeleteByScore (b);
+                z.deleteByScore (b);
             } else {
                 cout << "-1";
             }
             cout << "\n";
         } else if (a == 4) {
-            string* e = z.getMin ();
             long long* k = z.getMinScore ();
+            string* e = z.getDataByScore (*k);
             if (e) {
                 cout << *k << " " << *e;
             } else {
                 cout << "-1";
             }
-            z.skiplistDeleteByScore (*k);
+            z.deleteByScore (*k);
 
             cout << "\n";
         } else if (a == 5) {
-            string* e = z.getMax ();
             long long* k = z.getMaxScore ();
+            string* e = z.getDataByScore (*k);
 
             if (e) {
                 cout << *k << " " << *e;
             } else {
                 cout << "-1";
             }
-            z.skiplistDeleteByScore (*k);
+            z.deleteByScore (*k);
             cout << "\n";
         }
     }
