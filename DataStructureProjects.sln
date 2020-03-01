@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "skiplistOJ", "skiplistOJ\sk
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "skiplistRedis", "skiplistRedis\skiplistRedis.vcxproj", "{7CCA96FE-2E25-47A6-AC44-32CFF84DBD60}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "skiplistRedisOO", "skiplistRedisOO\skiplistRedisOO.vcxproj", "{ED83DBEF-B21F-4BD8-90B0-93B8FC0EF422}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +43,14 @@ Global
 		{7CCA96FE-2E25-47A6-AC44-32CFF84DBD60}.Release|x64.Build.0 = Release|x64
 		{7CCA96FE-2E25-47A6-AC44-32CFF84DBD60}.Release|x86.ActiveCfg = Release|Win32
 		{7CCA96FE-2E25-47A6-AC44-32CFF84DBD60}.Release|x86.Build.0 = Release|Win32
+		{ED83DBEF-B21F-4BD8-90B0-93B8FC0EF422}.Debug|x64.ActiveCfg = Debug|x64
+		{ED83DBEF-B21F-4BD8-90B0-93B8FC0EF422}.Debug|x64.Build.0 = Debug|x64
+		{ED83DBEF-B21F-4BD8-90B0-93B8FC0EF422}.Debug|x86.ActiveCfg = Debug|Win32
+		{ED83DBEF-B21F-4BD8-90B0-93B8FC0EF422}.Debug|x86.Build.0 = Debug|Win32
+		{ED83DBEF-B21F-4BD8-90B0-93B8FC0EF422}.Release|x64.ActiveCfg = Release|x64
+		{ED83DBEF-B21F-4BD8-90B0-93B8FC0EF422}.Release|x64.Build.0 = Release|x64
+		{ED83DBEF-B21F-4BD8-90B0-93B8FC0EF422}.Release|x86.ActiveCfg = Release|Win32
+		{ED83DBEF-B21F-4BD8-90B0-93B8FC0EF422}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

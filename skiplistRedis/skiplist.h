@@ -377,6 +377,33 @@ int zslDelete (zskiplist* zsl, double score, robj* obj) {
     }
     return 0; /* not found */
 }
+int zslDeleteByScore (zskiplist* zsl, double score) {
+    zskiplistNode* update[ZSKIPLIST_MAXLEVEL], * x;
+    int i;
+
+    x = zsl->header;
+    // 遍历所有层，记录删除节点后需要被修改的节点到 update 数组  
+    for (i = zsl->level - 1; i >= 0; i--) {
+        //指针前移首要条件是前向节点指针不为空，次要条件是分数小于指定分数，或即使分数相等，节点成员对象也不相等------> 前向指针前移的必要条件：分数小于或等于指定分数
+        while (x->level[i].forward && //前向指针不为空
+            x->level[i].forward->score < score//前向节点分数小于指定分数
+            )//前向节点成员对象不相同
+            x = x->level[i].forward;
+        //保存待删除节点的前一节点指针
+        update[i] = x;
+    }
+    // 因为多个不同的 member 可能有相同的 score  
+    // 所以要确保 x 的 member 和 score 都匹配时，才进行删除  
+
+    x = x->level[0].forward;
+
+    if (x && score == x->score) {
+        zslDeleteNode (zsl, x, update);
+        free (x);
+        return 1;
+    }
+    return 0; /* not found */
+}
 
 /* Find the rank for an element by both score and key.
 * Returns 0 when the element cannot be found, rank otherwise.
