@@ -6,4 +6,7 @@
   <ItemGroup>
     <ClInclude Include="skiplist.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="in.txt" />
+  </ItemGroup>
 </Project>
