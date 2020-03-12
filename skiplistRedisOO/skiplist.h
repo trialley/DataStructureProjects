@@ -1,13 +1,14 @@
 #pragma once
 #include <stdlib.h> 
 #include <time.h> 
-
+#include<iostream>
+using namespace std;
 template<typename K, typename E>
 class skiplist {
 public:
 
-    static const int _SKIPLIST_MAXLEVEL = 32;
-    static const int _SKIPLIST_P = 0.25;
+    static const int _SKIPLIST_MAXLEVEL = 32;//最大层数，足够用
+    static const int _SKIPLIST_P = 0.25;//随机数
 
     template<typename K, typename E>
     class skiplistNode {
@@ -23,6 +24,8 @@ public:
         };
         skiplistLevel<K, E> level[_SKIPLIST_MAXLEVEL];// 层
     };
+
+
 protected:
     skiplistNode<K, E>* _header;//指向空头
     skiplistNode<K, E>* _tail;//指向有数据的尾部
@@ -30,13 +33,19 @@ protected:
     int _level;// 目前表内节点的最大层数
 
     int _getRandomLevel () {
-        srand ((unsigned)time (nullptr));
-        int  level = 1;
-        while ((rand () & 0xFFFF) < (_SKIPLIST_P * 0xFFFF))
-            level += 1;
-        return (level < _SKIPLIST_MAXLEVEL) ? level : _SKIPLIST_MAXLEVEL;
+        //srand ((unsigned)time (nullptr));
+        int k = 1;
+        while (rand () %3)k++;
+        k = (k < _SKIPLIST_MAXLEVEL) ? k : _SKIPLIST_MAXLEVEL-1;
+        return k;
     }
-
+    //int _getRandomLevel () {
+    //    srand ((unsigned)time (nullptr));
+    //    int  level = 1;
+    //    while ((rand () & 0xFFFF) < (_SKIPLIST_P * 0xFFFF))
+    //        level += 1;
+    //    return (level < _SKIPLIST_MAXLEVEL) ? level : _SKIPLIST_MAXLEVEL;
+    //}
     skiplistNode<K, E>* _createNode (int  level, K score, E ele) {
         skiplistNode<K, E>* zn = new skiplistNode<K, E>;
         zn->score = score;
@@ -426,5 +435,37 @@ public:
             }
         }
         return nullptr;
+    }
+    ostream& output (ostream& out) {
+        char map[640][32] = { 0 };
+        for (int y = 0; y < 640; y++) {
+            for (int x = 0; x < 32; x++) {
+                map[y][x] = ' ';
+            }
+        }
+        skiplistNode<K, E>* p = _header;
+        int i = 0;
+        while (p) {//
+            int j = -1;
+            while (p->level[++j].forward) {
+                map[i][j] = '|';
+            }
+
+            i++;
+
+            p = p->level[0].forward;
+        }
+
+        for (int y = 0; y < 8; y++) {
+            for (int x = 0; x < 400; x++) {
+                out << map[x][y];
+            }
+            out << "\n";
+        }
+        return out;
+    }
+    friend ostream& operator <<(ostream& out, skiplist<K, E>& item) {
+        item.output (out);
+        return out;
     }
 };
