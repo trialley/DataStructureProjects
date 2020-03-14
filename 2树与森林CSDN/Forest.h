@@ -25,7 +25,7 @@ public:
 
 		//将每一棵二叉树都转换成树
 		for (int i = 0; i < m_pBinaryTreeVector.size (); ++i) {
-			Tree<T>* pTree = new Tree<T> (binaryTreeToTree<T> (m_pBinaryTreeVector.at (i)));
+			Tree<T>* pTree = new Tree<T> (m_pBinaryTreeVector.at (i));
 			unique_ptr<Tree<T> > uniqueTree (pTree);
 			_trees.push_back (std::move (uniqueTree));
 		}
