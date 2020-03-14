@@ -2,8 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClInclude Include="BinaryTree.h" />
-    <ClInclude Include="binaryTreeToForest.h" />
-    <ClInclude Include="ForestToBinaryTree.h" />
     <ClInclude Include="Tree.h" />
     <ClInclude Include="Forest.h" />
   </ItemGroup>

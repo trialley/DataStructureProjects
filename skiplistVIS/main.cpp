@@ -9,6 +9,7 @@
 using namespace std;
 #include <time.h>
 #include <iostream>
+#include<vector>
 using namespace std;
 
 class Stopwatch {
@@ -22,7 +23,10 @@ Stopwatch::~Stopwatch () {
     clock_t total = clock () - start; //析构函数和构造函数的时间差即为所用时间
     cout << "此操作所用时间:" << total << "ms\n";
 }
-
+struct t {
+    long long f;
+    string d;
+};
 
 int main () {
 #pragma warning(disable:4996)
@@ -56,9 +60,18 @@ int main () {
         }
     }
 
-
-
-
-    //system ("cls");
-    //cout << z;
+    vector<t> v;
+    {
+        Stopwatch watch;
+        for (long long i = 0; i < 100000; i++) {
+            v.push_back ({ rand () % 100000, "h" });
+        }
+    }
+    vector<t> v1;
+    {
+        Stopwatch watch;
+        for (long long i = 0; i < 100000; i++) {
+            v1.push_back ({ rand () % 100000, "h" });
+        }
+    }
 }
