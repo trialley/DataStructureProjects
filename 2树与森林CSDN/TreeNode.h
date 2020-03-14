@@ -10,9 +10,9 @@ public:
 	{
 		next = new TreeNode<T>*[pCnt];
 		for (size_t i = 0; i < pCnt; ++i)
-			next[i] = NULL;
+			next[i] = nullptr;
 		if (pCnt == 0)
-			next = NULL;
+			next = nullptr;
 	}
 
 

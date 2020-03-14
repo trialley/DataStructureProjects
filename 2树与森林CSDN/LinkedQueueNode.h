@@ -5,7 +5,7 @@ template<class T>
 class LinkedQueueNode
 {
 public:
-	LinkedQueueNode(const T& theElement, LinkedQueueNode<T> *theNext = NULL) :
+	LinkedQueueNode(const T& theElement, LinkedQueueNode<T> *theNext = nullptr) :
 		element(theElement),
 		next(theNext)
 	{}

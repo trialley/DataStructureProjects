@@ -23,6 +23,7 @@
     <ProjectGuid>{A5D17D4D-E614-4AA9-A0CD-927862BE6362}</ProjectGuid>
     <RootNamespace>skiplistOJ</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>1skiplistOJ</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

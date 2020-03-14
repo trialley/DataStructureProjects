@@ -26,7 +26,7 @@ private:
 
 template<class T>
 LinkedQueue<T>::LinkedQueue() :
-	m_pHeaderNode(NULL),
+	m_pHeaderNode(nullptr),
 	m_pSize(0)
 {}
 
@@ -34,7 +34,7 @@ LinkedQueue<T>::LinkedQueue() :
 template<class T>
 LinkedQueue<T>::~LinkedQueue()
 {
-	LinkedQueueNode<T>* nextNode = NULL;
+	LinkedQueueNode<T>* nextNode = nullptr;
 	LinkedQueueNode<T>* targetNode = m_pHeaderNode;
 	while (targetNode)
 	{
@@ -69,7 +69,7 @@ void LinkedQueue<T>::push(const T& element)
 	else
 	{
 		LinkedQueueNode<T> *targetNode = m_pHeaderNode;
-		while (targetNode->next != NULL)
+		while (targetNode->next != nullptr)
 		{
 			targetNode = targetNode->next;
 		}

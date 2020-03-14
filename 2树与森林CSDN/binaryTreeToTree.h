@@ -8,16 +8,16 @@
 using namespace std;
 
 template<class T>
-TreeNode<T> *m_pTree = NULL;
+TreeNode<T> *m_pTree = nullptr;
 
 template<class T>
-BinaryTreeNode<T> *m_pRoot = NULL;
+BinaryTreeNode<T> *m_pRoot = nullptr;
 
 template<class T>
 TreeNode<T>* binaryTreeToTree(BinaryTreeNode<T> *pRoot)
 {
 	m_pRoot<T> = pRoot;
-	binaryTreeToTree<T>(NULL, pRoot);
+	binaryTreeToTree<T>(nullptr, pRoot);
 	return m_pTree<T>;
 }
 
@@ -36,7 +36,7 @@ TreeNode<T>* binaryTreeToTree(BinaryTreeNode<T> *pRoot)
 template<class T>
 void binaryTreeToTree(TreeNode<T> *parentNode, BinaryTreeNode<T> *pNode)
 {
-	if (pNode == NULL)
+	if (pNode == nullptr)
 		return;
 
 	//判断是否是（注）中情况
@@ -62,10 +62,10 @@ void binaryTreeToTree(TreeNode<T> *parentNode, BinaryTreeNode<T> *pNode)
 	}
 
 	//（注）中情况
-	if (isRightNode && pNode->rightNode != NULL)
+	if (isRightNode && pNode->rightNode != nullptr)
 		++pCnt;
 
-	if (parentNode == NULL)
+	if (parentNode == nullptr)
 	{
 		parentNode = new TreeNode<T>(pNode->element, pCnt);
 		m_pTree<T> = parentNode;  //记录树的根节点
@@ -85,7 +85,7 @@ void binaryTreeToTree(TreeNode<T> *parentNode, BinaryTreeNode<T> *pNode)
 	}
 
 	//（注）中情况
-	if (isRightNode && pNode->rightNode != NULL)
+	if (isRightNode && pNode->rightNode != nullptr)
 	{
 		TreeNode<T> *pChildNode = new TreeNode<T>(pNode->rightNode->element);
 		parentNode->next[pCnt++] = pChildNode;

@@ -9,12 +9,12 @@
 using namespace std;
 
 template<class T>
-class BinaryTree
+class BTree
 {
 public:
-	BinaryTree();
-	BinaryTree(BinaryTreeNode<T> *pRoot, size_t pSize);
-	~BinaryTree();
+	BTree();
+	BTree(BinaryTreeNode<T> *pRoot, size_t pSize);
+	~BTree();
 
 	size_t size() const;
 	bool isEmpty() const;
@@ -30,23 +30,23 @@ private:
 };
 
 template<class T>
-BinaryTree<T>::BinaryTree() :
-	m_pRoot(NULL),
+BTree<T>::BTree() :
+	m_pRoot(nullptr),
 	m_pSize(0)
 {}
 
 template<class T>
-BinaryTree<T>::BinaryTree(BinaryTreeNode<T> *pRoot, size_t pSize) :
+BTree<T>::BTree(BinaryTreeNode<T> *pRoot, size_t pSize) :
 	m_pRoot(pRoot),
 	m_pSize(pSize)
 {}
 
 
 template<class T>
-BinaryTree<T>::~BinaryTree()
+BTree<T>::~BTree()
 {
 	LinkedQueue<BinaryTreeNode<T> *> pQueue;
-	if (m_pRoot != NULL)
+	if (m_pRoot != nullptr)
 		pQueue.push(m_pRoot);
 
 	while (!pQueue.isEmpty())
@@ -54,9 +54,9 @@ BinaryTree<T>::~BinaryTree()
 		BinaryTreeNode<T> *currentNode = pQueue.top();
 		pQueue.pop();
 
-		if (currentNode->leftNode != NULL)
+		if (currentNode->leftNode != nullptr)
 			pQueue.push(currentNode->leftNode);
-		if (currentNode->rightNode != NULL)
+		if (currentNode->rightNode != nullptr)
 			pQueue.push(currentNode->rightNode);
 
 		delete currentNode;
@@ -66,19 +66,19 @@ BinaryTree<T>::~BinaryTree()
 
 
 template<class T>
-BinaryTreeNode<T>* BinaryTree<T>::root() const
+BinaryTreeNode<T>* BTree<T>::root() const
 {
 	return m_pRoot;
 }
 
 template<class T>
-bool BinaryTree<T>::isEmpty() const
+bool BTree<T>::isEmpty() const
 {
 	return !m_pSize;
 }
 
 template<class T>
-size_t BinaryTree<T>::size() const
+size_t BTree<T>::size() const
 {
 	return m_pSize;
 }
@@ -86,7 +86,7 @@ size_t BinaryTree<T>::size() const
 
 
 template<class T>
-void BinaryTree<T>::initialize(T elements[], size_t pSize)
+void BTree<T>::initialize(T elements[], size_t pSize)
 {
 	if (pSize <= 0)
 		return;
@@ -111,10 +111,10 @@ void BinaryTree<T>::initialize(T elements[], size_t pSize)
 }
 
 template<class T>
-void BinaryTree<T>::levelOrderPrint()
+void BTree<T>::levelOrderPrint()
 {
 	LinkedQueue<BinaryTreeNode<T> *> pQueue;
-	if (m_pRoot != NULL)
+	if (m_pRoot != nullptr)
 		pQueue.push(m_pRoot);
 
 	while (!pQueue.isEmpty())
@@ -124,12 +124,12 @@ void BinaryTree<T>::levelOrderPrint()
 
 	//	cout << "parent: " << targetNode->element << endl;
 	//	cout << "children: ";
-		if (targetNode->leftNode != NULL)
+		if (targetNode->leftNode != nullptr)
 		{
 			pQueue.push(targetNode->leftNode);
 			//cout << targetNode->leftNode->element << " ";
 		}
-		if (targetNode->rightNode != NULL)
+		if (targetNode->rightNode != nullptr)
 		{
 			pQueue.push(targetNode->rightNode);
 			//cout << targetNode->rightNode->element << " ";

@@ -10,17 +10,17 @@ using namespace std;
 
 
 template<class T>
-vector<unique_ptr<Tree<T> > > binaryTreeToForest(const BinaryTree<T> &pRoot)
+vector<unique_ptr<Tree<T> > > binaryTreeToForest(const BTree<T> &pRoot)
 {
 	vector<unique_ptr<Tree<T> > > m_pTreeVector;
 	vector<BinaryTreeNode<T> *> m_pBinaryTreeVector;
 
 	//²ð·Ö¶þ²æÊ÷
 	BinaryTreeNode<T> *pNode = pRoot.root();
-	while (pNode != NULL)
+	while (pNode != nullptr)
 	{
 		BinaryTreeNode<T> *pRightNode = pNode->rightNode;
-		pNode->rightNode = NULL;
+		pNode->rightNode = nullptr;
 		m_pBinaryTreeVector.push_back(pNode);
 		pNode = pRightNode;
 	}

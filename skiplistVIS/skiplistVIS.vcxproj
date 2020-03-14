@@ -23,6 +23,7 @@
     <ProjectGuid>{DFCB911A-9458-446A-8CCF-224013C32D45}</ProjectGuid>
     <RootNamespace>skiplistVIS</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>1skiplistVIS</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

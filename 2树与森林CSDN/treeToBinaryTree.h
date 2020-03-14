@@ -11,7 +11,7 @@ BinaryTreeNode<T> *m_pBinaryTree;
 template<class T>
 BinaryTreeNode<T> *treeToBinaryTree(const Tree<T> &pRoot)
 {
-	treeToBinaryTree<T>(NULL, pRoot.root());
+	treeToBinaryTree<T>(nullptr, pRoot.root());
 	return m_pBinaryTree<T>;
 }
 
@@ -23,10 +23,10 @@ BinaryTreeNode<T> *treeToBinaryTree(const Tree<T> &pRoot)
 template<class T>
 void treeToBinaryTree(BinaryTreeNode<T> *parentNode, TreeNode<T> *pNode)
 {
-	if (pNode == NULL)
+	if (pNode == nullptr)
 		return;
 	
-	if (parentNode == NULL)
+	if (parentNode == nullptr)
 	{
 		parentNode = new BinaryTreeNode<T>(pNode->element);
 		m_pBinaryTree<T> = parentNode;

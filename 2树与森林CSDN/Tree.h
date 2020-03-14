@@ -9,7 +9,7 @@ template<class T>
 class Tree
 {
 public:
-	Tree(TreeNode<T>* pRoot = NULL);
+	Tree(TreeNode<T>* pRoot = nullptr);
 	~Tree();
 	
 	size_t size() const;
@@ -29,7 +29,7 @@ Tree<T>::Tree(TreeNode<T> * pRoot) :
 	m_pSize(0)
 {
 	LinkedQueue<TreeNode<T> *> pQueue;
-	if (m_pRoot != NULL)
+	if (m_pRoot != nullptr)
 	{
 		pQueue.push(m_pRoot);
 		++m_pSize;
@@ -80,7 +80,7 @@ template<class T>
 void Tree<T>::levelOrderPrint() const
 {
 	LinkedQueue<TreeNode<T> *> pQueue;
-	if (m_pRoot != NULL)
+	if (m_pRoot != nullptr)
 		pQueue.push(m_pRoot);
 
 	while (!pQueue.isEmpty())

@@ -9,8 +9,8 @@ class BinaryTreeNode
 public:
 	BinaryTreeNode(const T& theElement) :
 		element(theElement),
-		leftNode(NULL),
-		rightNode(NULL)
+		leftNode(nullptr),
+		rightNode(nullptr)
 	{}
 
 	T element;

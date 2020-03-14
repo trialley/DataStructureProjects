@@ -23,6 +23,7 @@
     <ProjectGuid>{ED83DBEF-B21F-4BD8-90B0-93B8FC0EF422}</ProjectGuid>
     <RootNamespace>skiplistRedisOO</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>1skiplistRedisOO</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
