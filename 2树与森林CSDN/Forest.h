@@ -10,7 +10,6 @@ template<class T>
 class Forest {
 private:
 	vector<Tree<T>* > _trees;
-	size_t _size;
 public:
 	/*从一二叉树中初始化本森林*/
 	Forest (BTree<T>& pRoot) {
@@ -35,7 +34,7 @@ public:
 	}
 	~Forest (){}
 
-	size_t size () const { return _size; };
+	size_t size () const { return _trees.size(); };
 	unique_ptr<Tree<T> > getTree (int index)const {
 		if (index >= _trees.size ()) {
 			return nullptr;

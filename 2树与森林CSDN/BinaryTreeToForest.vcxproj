@@ -144,9 +144,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BinaryTree.h" />
-    <ClInclude Include="binaryTreeToForest.h" />
     <ClInclude Include="Forest.h" />
-    <ClInclude Include="ForestToBinaryTree.h" />
     <ClInclude Include="Tree.h" />
   </ItemGroup>
   <ItemGroup>
