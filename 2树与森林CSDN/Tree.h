@@ -102,7 +102,7 @@ void Tree<T>::levelOrderPrint () const {
 	if (_root != nullptr)
 		pQueue.push (_root);
 
-	while (!pQueue.isEmpty ()) {
+	while (!pQueue.empty ()) {
 		TreeNode<T>* targetNode = pQueue.front ();
 		pQueue.pop ();
 
