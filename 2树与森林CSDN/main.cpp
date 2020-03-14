@@ -2,7 +2,7 @@
 #include "Tree.h"
 #include "binaryTreeToForest.h"
 #include "ForestToBinaryTree.h"
-
+#include"Forest.h"
 #include <iostream>
 #include <vector>
 using namespace std;
@@ -16,24 +16,29 @@ int main()
 	binaryTree.levelOrderPrint();
 	cout << endl;
 
-	vector<unique_ptr<Tree<int> > > pTreeVector = binaryTreeToForest<int>(binaryTree);
-	for (size_t i = 0; i < pTreeVector.size(); ++i)
-	{
-		pTreeVector.at(i)->levelOrderPrint();
-		cout << "..............................." << endl;
-	}
+	//vector<unique_ptr<Tree<int> > > pTreeVector = binaryTreeToForest<int>(binaryTree);
+	//for (size_t i = 0; i < pTreeVector.size(); ++i)
+	//{
+	//	pTreeVector.at(i)->levelOrderPrint();
+	//	cout << "..............................." << endl;
+	//}
 
-	vector<Tree<int> *> pForestVector;
-	for (int i = 0; i < pTreeVector.size(); ++i){
-		TreeNode<int>* pTreeNode = pTreeVector.at(i)->root();
-		Tree<int> *pTree = new Tree<int>(pTreeNode);
-		pForestVector.push_back(pTree);
-	}
+	//vector<Tree<int> *> pForestVector;
+	//for (int i = 0; i < pTreeVector.size(); ++i){
+	//	TreeNode<int>* pTreeNode = pTreeVector.at(i)->root();
+	//	Tree<int> *pTree = new Tree<int>(pTreeNode);
+	//	pForestVector.push_back(pTree);
+	//}
 
-	unique_ptr<BTree<int> >pNode = forestToBinaryTree<int>(pForestVector);
-	pNode->levelOrderPrint();
+	//unique_ptr<BTree<int> >pNode = forestToBinaryTree<int>(pForestVector);
+	//pNode->levelOrderPrint();
 
-	cout << endl;
+	//cout << endl;
+
+
+
+
+	Forest<int> f (binaryTree);
 
 	return 0;
 }

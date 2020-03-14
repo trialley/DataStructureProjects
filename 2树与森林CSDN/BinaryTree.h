@@ -1,57 +1,64 @@
 #pragma once
 
-#include "BinaryTreeNode.h"
-#include "TreeNode.h"
+//#include "BinaryTreeNode.h"
+//#include "TreeNode.h"
 #include "tree.h"
-#include "LinkedQueue.h"
-
+//#include "queue.h"
+#include<queue>
+#include<queue>
 #include <vector>
 using namespace std;
-
 template<class T>
-class BTree
-{
+class BinaryTreeNode {
+public:
+	BinaryTreeNode (const T& theElement) :
+		element (theElement),
+		leftNode (nullptr),
+		rightNode (nullptr) {}
+
+	T element;
+	BinaryTreeNode<T>* leftNode;
+	BinaryTreeNode<T>* rightNode;
+};
+template<class T>
+class BTree{
 public:
 	BTree();
 	BTree(BinaryTreeNode<T> *pRoot, size_t pSize);
 	~BTree();
-
 	size_t size() const;
 	bool isEmpty() const;
-
 	void initialize(T elements[], size_t pSize);
-
 	void levelOrderPrint();
 	BinaryTreeNode<T> *root() const;
 private:
-
-	BinaryTreeNode<T> *m_pRoot;
-	size_t m_pSize;
+	BinaryTreeNode<T> *_root;
+	size_t _size;
 };
 
 template<class T>
 BTree<T>::BTree() :
-	m_pRoot(nullptr),
-	m_pSize(0)
+	_root(nullptr),
+	_size(0)
 {}
 
 template<class T>
 BTree<T>::BTree(BinaryTreeNode<T> *pRoot, size_t pSize) :
-	m_pRoot(pRoot),
-	m_pSize(pSize)
+	_root(pRoot),
+	_size(pSize)
 {}
 
 
 template<class T>
 BTree<T>::~BTree()
 {
-	LinkedQueue<BinaryTreeNode<T> *> pQueue;
-	if (m_pRoot != nullptr)
-		pQueue.push(m_pRoot);
+	queue<BinaryTreeNode<T> *> pQueue;
+	if (_root != nullptr)
+		pQueue.push(_root);
 
-	while (!pQueue.isEmpty())
+	while (!pQueue.empty())
 	{
-		BinaryTreeNode<T> *currentNode = pQueue.top();
+		BinaryTreeNode<T> *currentNode = pQueue.front();
 		pQueue.pop();
 
 		if (currentNode->leftNode != nullptr)
@@ -68,19 +75,19 @@ BTree<T>::~BTree()
 template<class T>
 BinaryTreeNode<T>* BTree<T>::root() const
 {
-	return m_pRoot;
+	return _root;
 }
 
 template<class T>
 bool BTree<T>::isEmpty() const
 {
-	return !m_pSize;
+	return !_size;
 }
 
 template<class T>
 size_t BTree<T>::size() const
 {
-	return m_pSize;
+	return _size;
 }
 
 
@@ -91,14 +98,14 @@ void BTree<T>::initialize(T elements[], size_t pSize)
 	if (pSize <= 0)
 		return;
 
-	LinkedQueue<BinaryTreeNode<T> *> pQueue;
-	m_pRoot = new BinaryTreeNode<T>(elements[0]);
-	pQueue.push(m_pRoot);
+	queue<BinaryTreeNode<T> *> pQueue;
+	_root = new BinaryTreeNode<T>(elements[0]);
+	pQueue.push(_root);
 
 	size_t i = 1;
 	while (i < pSize)
 	{
-		BinaryTreeNode<T> *pCurNode = pQueue.top();
+		BinaryTreeNode<T> *pCurNode = pQueue.front();
 		pQueue.pop();
 		pCurNode->leftNode = new BinaryTreeNode<T>(elements[i++]);
 		pQueue.push(pCurNode->leftNode);
@@ -113,13 +120,13 @@ void BTree<T>::initialize(T elements[], size_t pSize)
 template<class T>
 void BTree<T>::levelOrderPrint()
 {
-	LinkedQueue<BinaryTreeNode<T> *> pQueue;
-	if (m_pRoot != nullptr)
-		pQueue.push(m_pRoot);
+	queue<BinaryTreeNode<T> *> pQueue;
+	if (_root != nullptr)
+		pQueue.push(_root);
 
-	while (!pQueue.isEmpty())
+	while (!pQueue.empty())
 	{
-		BinaryTreeNode<T> *targetNode = pQueue.top();
+		BinaryTreeNode<T> *targetNode = pQueue.front();
 		pQueue.pop();
 
 	//	cout << "parent: " << targetNode->element << endl;
