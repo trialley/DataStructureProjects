@@ -1,12 +1,59 @@
 #pragma once
-#include <stdlib.h> 
-#include <time.h> 
+#include <cstdlib> 
+#include <ctime> 
 #include<iostream>
 using namespace std;
+
+
+/*
+template<typename K, typename E>
+class skiplistLevel {
+public:
+    skiplistNode<K, E>* forward;  // 前进指针
+    unsigned long long span;      // 节点在该层和前向节点的距离。可用于获取元素排名
+};
+
+template<typename K, typename E>
+class skiplistNode {
+public:
+    E data;     // 值
+    K score;    // 关键词
+    skiplistNode<K, E>* backward;       // 后退指针
+    skiplistLevel<K, E> level[_SKIPLIST_MAXLEVEL];  // 各层指针
+};
+
 template<typename K, typename E>
 class skiplist {
 public:
+    static const int _SKIPLIST_MAXLEVEL = 32;   //最大层数
+protected:
+    skiplistNode<K, E>* _header;//指向空头
+    skiplistNode<K, E>* _tail;//指向有数据的尾部
+    unsigned long _length;// 节点数量
+    int _level;// 目前表内节点的最大层数
+    int _getRandomLevel () ;
+    skiplistNode<K, E>* _createNode (int  level, K score, E ele);
+    skiplistNode<K, E>* _createNode (int  level);
+    void _skiplistDeleteNode (skiplistNode<K, E>* x, skiplistNode<K, E>** update);
 
+public:
+    explicit skiplist ();    //构造函数
+    bool empty ();           //返回是否为空
+    K* getMinScore ();       //获取最大关键词
+    K* getMaxScore ();       //获取最小关键词
+    skiplistNode<K, E>* insert (double score, E data);//插入
+    unsigned long deleteRangeByRank (unsigned long long start, unsigned long long end);
+    bool deleteByScore (double score);
+    E* getDataByScore (double score);
+
+    ostream& output (ostream& out);
+    friend ostream& operator <<(ostream& out, skiplist<K, E>& item);
+}
+
+*/
+template<typename K, typename E>
+class skiplist {
+public:
     static const int _SKIPLIST_MAXLEVEL = 32;//最大层数，足够用
     static const int _SKIPLIST_P = 0.25;//随机数
 
@@ -32,46 +79,27 @@ protected:
     unsigned long _length;// 节点数量
     int _level;// 目前表内节点的最大层数
 
+
+    /*获取随机层数，每个高度出现的概率都指数降低*/
     int _getRandomLevel () {
-        //srand ((unsigned)time (nullptr));
         int k = 1;
-        while (rand () %3)k++;
+        while (rand () % 4)k++;//概率随高度指数降低
         k = (k < _SKIPLIST_MAXLEVEL) ? k : _SKIPLIST_MAXLEVEL-1;
         return k;
     }
-    //int _getRandomLevel () {
-    //    srand ((unsigned)time (nullptr));
-    //    int  level = 1;
-    //    while ((rand () & 0xFFFF) < (_SKIPLIST_P * 0xFFFF))
-    //        level += 1;
-    //    return (level < _SKIPLIST_MAXLEVEL) ? level : _SKIPLIST_MAXLEVEL;
-    //}
+    /*根据输入的层数和键值对构建节点*/
     skiplistNode<K, E>* _createNode (int  level, K score, E ele) {
         skiplistNode<K, E>* zn = new skiplistNode<K, E>;
         zn->score = score;
         zn->data = ele;
         return zn;
     }
-
+    /*根据层数构建空节点*/
     skiplistNode<K, E>* _createNode (int  level) {
         skiplistNode<K, E>* zn = new skiplistNode<K, E>;
         return zn;
     }
-    /* long longernal function used by skiplistDelete, deleteByScore and skiplistDeleteByRank */
-/*****************************************************************************
- * 函 数 名  : skiplistDeleteNode
- * 函数功能  : 内置功能函数，被skiplistDelete等函数调用
- * 输入参数  : skiplist *skiplist          链表头指针
-               skiplistNode *x        待删除节点指针
-               skiplistNode **update  带删除节点的前一节点地址的指针
- * 输出参数  : 无
- * 返 回 值  :
- * 调用关系  :
- * 记    录
- * 1.日    期: 2017年06月24日
- *   作    者:
- *   修改内容: 新生成函数
-*****************************************************************************/
+    /*删除功能的辅助函数*/
     void _skiplistDeleteNode (skiplistNode<K, E>* x, skiplistNode<K, E>** update) {
         long long i;
         for (i = 0; i < this->_level; i++) {
@@ -100,31 +128,10 @@ protected:
         //跳跃表长度减一
         this->_length--;
 
-
-        //free (x);
         delete x;
     }
 
 public:
-
-    //explicit skiplist (K MIN, E NODATA) {
-    //    long long j;
-
-    //    // 初始化跳跃表属性,层数初始化为1，长度初始化为0
-    //    this->_level = 1;
-    //    this->_length = 0;
-
-    //    // 创建一个层数为32，分值为0，成员对象为nullptr的表头结点
-    //    this->_header = _createNode (_SKIPLIST_MAXLEVEL, MIN, NODATA);
-    //    for (j = 0; j < _SKIPLIST_MAXLEVEL; j++) {
-    //        // 设定每层的forward指针指向nullptr
-    //        this->_header->level[j].forward = nullptr;
-    //        this->_header->level[j].span = 0;
-    //    }
-    //    // 设定backward指向nullptr
-    //    this->_header->backward = nullptr;
-    //    this->_tail = nullptr;
-    //}
     explicit skiplist () {
         long long j;
 
@@ -145,15 +152,8 @@ public:
     }
 
     bool empty () { return _length == 0; }
-    //E* getMin () {
-    //    if (empty ())return nullptr;
-    //    if (_header) {
-    //        if (_header->level[0].forward) {
-    //            return &_header->level[0].forward->data;
-    //        }
-    //    }
-    //    return nullptr;
-    //}
+
+    /*获取最小关键词*/
     K* getMinScore () {
         if (empty ())return nullptr;
         if (_header) {
@@ -163,6 +163,7 @@ public:
         }
         return nullptr;
     }
+    /*获取最大关键词*/
     K* getMaxScore () {
         if (empty ())return nullptr;
         if (_tail) {
@@ -170,23 +171,8 @@ public:
         }
         return nullptr;
     }
-    //E* getMax () {
-    //    if (empty ())return nullptr;
-    //    if (_tail) {
-    //        return &_tail->data;
-    //    }
-    //    return nullptr;
-    //}
-    /*****************************************************************************
- * 函 数 名  : insert
- * 函数功能  : 插入新节点
- * 输入参数  : skiplist *skiplist  表头
-               double score    节点分数
-               robj *data       待插入节点分数
- * 输出参数  : 无
- * 返 回 值  : skiplistNode
-*****************************************************************************/
-    skiplistNode<K, E>* insert (double score, E data) {
+    /*插入新的键值对*/
+    skiplistNode<K, E>* insert (K score, E data) {
         // updata[]数组记录每一层位于插入节点的前一个节点
         skiplistNode<K, E>* update[_SKIPLIST_MAXLEVEL];
 
@@ -196,7 +182,6 @@ public:
 
         long long i, level;
 
-        //serverAssert (!isnan (score));
         // 表头节点
         skiplistNode<K, E>* x = this->_header;
 
@@ -220,11 +205,6 @@ public:
             // 存储当前层上位于插入节点的前一个节点,找下一层的插入节点
             update[i] = x;
         }
-
-        /* we assume the key is not already inside, since we allow duplicated
-         * scores, and the re-insertion of score and redis object should never
-         * happen since the caller of insert() should test in the hash table
-         * if the element is already inside or not. */
 
          // 此处假设插入节点的成员对象不存在于当前跳跃表内，即不存在重复的节点
          // 随机生成一个level值
@@ -260,8 +240,6 @@ public:
             //插入位置节点的后继就是新节点  
             update[i]->level[i].forward = x;
 
-            /* update span covered by update[i] as x is inserted here */
-
             //rank[i]: 在第i层，update[i]->score的排名 
             //rank[0] - rank[i]: update[0]->score与update[i]->score之间间隔了几个数
 
@@ -284,13 +262,7 @@ public:
             update[i]->level[i].span = (rank[0] - rank[i]) + 1;
         }
 
-
-        //
         //另外需要注意当level > skiplist->level时，update[i] = skiplist->header的span处理 
-
-
-        /* increment span for untouched levels */
-
         // 更新高层的span值
         for (i = level; i < this->_level; i++) {
             //因为下层中间插入了x，而高层没有，所以多了一个跨度
@@ -316,24 +288,7 @@ public:
     }
 
 
-
-    /* Delete all the elements with rank between start and end from the skiplist.
-     * Start and end are inclusive. Note that start and end need to be 1-based */
-     /*****************************************************************************
-      * 函 数 名  : deleteRangeByRank
-      * 函数功能  : 根据提供的排名起始和结尾删除节点
-      * 输入参数  : skiplist *skiplist      跳跃表指针
-                    unsigned long long start  排名起始
-                    unsigned long long end    排名结尾
-                    dict *dict          ？
-      * 输出参数  : 无
-      * 返 回 值  : removed
-      * 调用关系  :
-      * 记    录
-      * 1.日    期: 2017年06月29日
-      *   作    者: zyz
-      *   修改内容: 新生成函数
-     *****************************************************************************/
+    /*通过排名范围删除数据*/
     unsigned long deleteRangeByRank (unsigned long long start, unsigned long long end) {
         skiplistNode<K, E>* update[_SKIPLIST_MAXLEVEL], * x;
         unsigned long traversed = 0, removed = 0;
@@ -367,7 +322,8 @@ public:
         return removed;
     }
 
-    bool deleteByScore (double score) {
+    /*通过关键词删除数据*/
+    bool deleteByScore (K score) {
         skiplistNode<K, E>* update[_SKIPLIST_MAXLEVEL], * x;
         long long i;
 
@@ -393,25 +349,8 @@ public:
         }
         return false; /* not found */
     }
-    /* Find the rank for an element by both score and key.
-    * Returns 0 when the element cannot be found, rank otherwise.
-    * Note that the rank is 1-based due to the span of skiplist->header to the
-    * first element. */
-    /*****************************************************************************
-     * 函 数 名  : skiplistGetRank
-     * 函数功能  : 获取指定分数和成员数据对象确定节点的排名
-     * 输入参数  : skiplist *skiplist  跳跃表指针
-                   double score    节点分数
-                   robj *o         成员数据对象指针
-     * 输出参数  : 无
-     * 返 回 值  : unsigned
-     * 调用关系  :
-     * 记    录
-     * 1.日    期: 2017年06月29日
-     *   作    者: zyz
-     *   修改内容: 新生成函数
-    *****************************************************************************/
-    E* getDataByScore (double score) {
+    /*通过关键词获取数据*/
+    E* getDataByScore (K score) {
         if (empty ())return nullptr;
         if (score < _header->level[0].forward->score)return nullptr;
         if (_tail && score > _tail->score)return nullptr;
@@ -429,16 +368,16 @@ public:
                 x = x->level[i].forward;
             }
 
-            /* x might be equal to skiplist->header, so test if data is non-nullptr */
             if (x->score == score) {
                 return &x->data;
             }
         }
         return nullptr;
     }
+    /*图形化输出跳表*/
     ostream& output (ostream& out) {
-        char map[640][32] = { 0 };
-        for (int y = 0; y < 640; y++) {
+        char map[1000][32] = { 0 };
+        for (int y = 0; y < 1000; y++) {
             for (int x = 0; x < 32; x++) {
                 map[y][x] = ' ';
             }
@@ -456,14 +395,15 @@ public:
             p = p->level[0].forward;
         }
 
-        for (int y = 0; y < 8; y++) {
-            for (int x = 0; x < 400; x++) {
+        for (int y = 0; y < 30; y++) {
+            for (int x = 0; x < 1000; x++) {
                 out << map[x][y];
             }
             out << "\n";
         }
         return out;
     }
+    /*输出跳表的包装函数*/
     friend ostream& operator <<(ostream& out, skiplist<K, E>& item) {
         item.output (out);
         return out;
