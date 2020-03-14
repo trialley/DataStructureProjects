@@ -3,11 +3,13 @@
 //#include "BinaryTreeNode.h"
 //#include "TreeNode.h"
 #include "tree.h"
-//#include "queue.h"
+#include"Forest.h"
 #include<queue>
 #include<queue>
 #include <vector>
 using namespace std;
+template<class T>
+class Forest;
 template<class T>
 class BinaryTreeNode {
 public:
@@ -26,11 +28,30 @@ public:
 	BinaryTreeNode<T>* m_pBinaryTree;
 	BTree();
 	BTree(BinaryTreeNode<T> *pRoot, size_t pSize);
+	BTree (const Forest<T>& pForest) {
+			if (pForest.size () == 0)
+				return;
+
+			//将每一棵树转换成二叉树，然后连起来
+			BinaryTreeNode<T>* pRoot = (new BTree<T> (*pForest.at (0)))->root ();
+			BinaryTreeNode<T>* pCurRoot = pRoot;
+			BinaryTreeNode<T>* pNextRoot = nullptr;
+			size_t pSize = pForest.at (0)->size ();
+
+			for (int i = 1; i < pForest.size (); ++i) {
+				pSize += pForest.at (i)->size ();
+				pNextRoot = (new BTree<T> (*pForest.at (i)))->root ();
+				pCurRoot->rightNode = pNextRoot;
+				pCurRoot = pNextRoot;
+			}
+
+			_root = pRoot;
+			_size = pSize;
+	}
 	BTree (const Tree<T>& pRoot) {
 		treeToBinaryTree (nullptr, pRoot.root ());
-		_root= m_pBinaryTree;
+		_root = m_pBinaryTree;
 	}
-
 	/************************************************************************/
 	/*                           树变二叉树                                  */
 	/*                  所有兄弟节点之间加一条线								*/

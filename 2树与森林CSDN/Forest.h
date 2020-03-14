@@ -1,17 +1,20 @@
 #pragma once
 #include "BinaryTree.h"
 #include "Tree.h"
-
-
+#include<vector>
+#include<memory>
+using namespace std;
+template<class T>
+class BTree;
 template<class T>
 class Forest {
 private:
-	vector<unique_ptr< Tree<T> > > _trees;
+	vector<Tree<T>* > _trees;
 	size_t _size;
 public:
 	/*从一二叉树中初始化本森林*/
-	Forest (const BTree<T>& pRoot) {
-		vector<unique_ptr<Tree<T> > > m_pTreeVector;
+	Forest (BTree<T>& pRoot) {
+		vector<Tree<T>* > m_pTreeVector;
 		vector<BinaryTreeNode<T>*> m_pBinaryTreeVector;
 
 		//拆分二叉树
@@ -25,9 +28,7 @@ public:
 
 		//将每一棵二叉树都转换成树
 		for (int i = 0; i < m_pBinaryTreeVector.size (); ++i) {
-			Tree<T>* pTree = new Tree<T> (m_pBinaryTreeVector.at (i));
-			unique_ptr<Tree<T> > uniqueTree (pTree);
-			_trees.push_back (std::move (uniqueTree));
+			_trees.push_back (new Tree<T> (m_pBinaryTreeVector.at (i)));
 		}
 
 		//_trees = m_pTreeVector;
@@ -42,5 +43,11 @@ public:
 
 		return new Tree<T> (_trees[index]);
 	}
+	Tree<T>*  at (int index)const {
+		if (index >= _trees.size ()) {
+			return nullptr;
+		}
 
+		return  _trees.at(index);
+	}
 };
