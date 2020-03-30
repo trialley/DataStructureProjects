@@ -8,4 +8,10 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="in2.txt" />
+    <Text Include="out1.txt" />
+    <Text Include="out2.txt" />
+    <Text Include="in1.txt" />
+  </ItemGroup>
 </Project>

@@ -11,6 +11,8 @@ class Forest {
 private:
 	vector<Tree<T>* > _trees;
 public:
+	Forest(){}
+
 	/*从一二叉树中初始化本森林*/
 	Forest (BTree<T>& pRoot) {
 		vector<Tree<T>* > m_pTreeVector;

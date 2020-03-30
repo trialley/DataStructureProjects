@@ -150,6 +150,12 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="in1.txt" />
+    <Text Include="in2.txt" />
+    <Text Include="out1.txt" />
+    <Text Include="out2.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
