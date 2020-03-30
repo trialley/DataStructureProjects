@@ -1,44 +1,39 @@
 #include "BinaryTree.h"
 #include "Tree.h"
-//#include "binaryTreeToForest.h"
-//#include "ForestToBinaryTree.h"
 #include"Forest.h"
 #include <iostream>
 #include <vector>
 using namespace std;
 
+#define DEBUG
+#ifdef DEBUG
+#define dprintf printf
+#else
+#define dprintf  /\
+/printf
+#endif
 
 int main () {
-	int initElement[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ,11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
-	BTree<int> binaryTree;
-	binaryTree.initialize (initElement, 20);
-	binaryTree.levelOrderPrint ();
-	cout << endl;
+	freopen ("in1.txt", "r", stdin);
+	Forest<int> f;
+	BTree<int> t;
+	int K, N, M;
+	cin >> K, N, M;
 
-	//vector<unique_ptr<Tree<int> > > pTreeVector = binaryTreeToForest<int> (binaryTree);
-	//for (size_t i = 0; i < pTreeVector.size (); ++i) {
-	//	pTreeVector.at (i)->levelOrderPrint ();
-	//	cout << "..............................." << endl;
-	//}
+	if (K == 0) {
+		//是森林
+		//若初始为森林，每行的格式为 A B [nodes], 表示结点 A 拥有 B 个孩子结点, 孩子结点的集合为 nodes, i.e. 1 2 3 4 表示结点 1 拥有 2 个孩子, 分别为结点 3, 4。
+		//for (int i = 0; i < N; i++) {
+		//	//int a, b;
+		//	//for (int j = 0; j < b; j++) {
+		//	//	cin >> a >> b;
 
-	//vector<Tree<int>*> pForestVector;
-	//for (int i = 0; i < pTreeVector.size (); ++i) {
-	//	TreeNode<int>* pTreeNode = pTreeVector.at (i)->root ();
-	//	Tree<int>* pTree = new Tree<int> (pTreeNode);
-	//	pForestVector.push_back (pTree);
-	//}
+		//	//}
+		//}
+		f.initn (N);
+	} else {
+		//是树
+	}
 
-	//unique_ptr<BTree<int> >pNode = forestToBinaryTree<int> (pForestVector);
-	//pNode->levelOrderPrint ();
-
-	//cout << endl;
-
-
-
-
-	Forest<int> f (binaryTree);
-
-	BTree<int> t (f);
-	t.levelOrderPrint ();
 	return 0;
 }

@@ -11,6 +11,25 @@ class Forest {
 private:
 	vector<Tree<T>* > _trees;
 public:
+	void initn (int N) {
+	//若初始为森林，每行的格式为 A B[nodes], 表示结点 A 拥有 B 个孩子结点, 孩子结点的集合为 nodes, i.e. 1 2 3 4 表示结点 1 拥有 2 个孩子, 分别为结点 3, 4。
+		for (int i = 0; i < N; i++) {
+			int a,b;
+			cin >> a >> b;
+			for (int i = 0; i < _trees.size (); i++) {
+				if (_trees[i]->root ()->element == a) {
+					for (int j=0; j < b; j++) {
+						int temp;
+						cin >> temp;
+						_trees[i]->insert(temp).
+					}
+				}
+				break;
+			}
+		}
+	}
+	Forest(){}
+
 	/*从一二叉树中初始化本森林*/
 	Forest (BTree<T>& pRoot) {
 		vector<Tree<T>* > m_pTreeVector;

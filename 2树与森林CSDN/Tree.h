@@ -4,39 +4,41 @@
 //#include "TreeNode.h"
 #include "BinaryTree.h"
 #include<queue>
+#include<vector>
 using namespace std;
 //#include "queue.h"
 
 template<class T>
 class BinaryTreeNode;
 
+
+template<class T>
+class TreeNode;
+
+template<class T>
+bool TreeNodecmp (const TreeNode<T>* l, const TreeNode<T>* r) {
+	return l->element < r.element;
+}
 template<class T>
 class TreeNode {
 public:
 	TreeNode (const T& theElement, size_t pCnt = 0) :
-		element (theElement),
-		pSize (pCnt) {
-		next = new TreeNode<T> * [pCnt];
-		for (size_t i = 0; i < pCnt; ++i)
-			next[i] = nullptr;
-		if (pCnt == 0)
-			next = nullptr;
-	}
+		element (theElement),next(pCnt) {}
 
 
 	~TreeNode () {
-		delete[]next;
 	}
 
 	void setSize (size_t pCnt) {
-		delete[]next;
-		next = new TreeNode<T> * [pCnt];
-		pSize = pCnt;
+		next.resize (pCnt);
 	}
 
-	size_t pSize;
+	void insert (T in) {
+		next.push_back (new TreeNode(in));
+		sort (next.begin (), next.end (), TreeNodecmp);
+	}
 	T element;
-	TreeNode<T>** next;
+	vector<TreeNode<T>*> next;
 };
 template<class T>
 class Tree {

@@ -3,19 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "skiplist", "skiplist\skiplist.vcxproj", "{3EE2E573-C7DA-43A8-A884-EF59EECE88DA}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "1skiplist", "skiplist\skiplist.vcxproj", "{3EE2E573-C7DA-43A8-A884-EF59EECE88DA}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "skiplistOJ", "skiplistOJ\skiplistOJ.vcxproj", "{A5D17D4D-E614-4AA9-A0CD-927862BE6362}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "1skiplistOJ", "skiplistOJ\skiplistOJ.vcxproj", "{A5D17D4D-E614-4AA9-A0CD-927862BE6362}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "skiplistRedis", "skiplistRedis\skiplistRedis.vcxproj", "{7CCA96FE-2E25-47A6-AC44-32CFF84DBD60}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "1skiplistRedis", "skiplistRedis\skiplistRedis.vcxproj", "{7CCA96FE-2E25-47A6-AC44-32CFF84DBD60}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "skiplistRedisOO", "skiplistRedisOO\skiplistRedisOO.vcxproj", "{ED83DBEF-B21F-4BD8-90B0-93B8FC0EF422}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "1skiplistRedisOO", "skiplistRedisOO\skiplistRedisOO.vcxproj", "{ED83DBEF-B21F-4BD8-90B0-93B8FC0EF422}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "skiplistVIS", "skiplistVIS\skiplistVIS.vcxproj", "{DFCB911A-9458-446A-8CCF-224013C32D45}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "1skiplistVIS", "skiplistVIS\skiplistVIS.vcxproj", "{DFCB911A-9458-446A-8CCF-224013C32D45}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2树与森林CSDN", "2树与森林CSDN\BinaryTreeToForest.vcxproj", "{7C407091-B941-4ECE-8797-F70581EFF2F4}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2树与森林OJ", "2树与森林OJ\2树与森林.vcxproj", "{FB32E1A5-4A83-4EEA-9B14-2C7221D62F2B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2树与森林OJ2", "2树与森林OJ2\2树与森林OJ2.vcxproj", "{2814091E-04EF-42EA-A67C-856B6765D484}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,6 +83,14 @@ Global
 		{FB32E1A5-4A83-4EEA-9B14-2C7221D62F2B}.Release|x64.Build.0 = Release|x64
 		{FB32E1A5-4A83-4EEA-9B14-2C7221D62F2B}.Release|x86.ActiveCfg = Release|Win32
 		{FB32E1A5-4A83-4EEA-9B14-2C7221D62F2B}.Release|x86.Build.0 = Release|Win32
+		{2814091E-04EF-42EA-A67C-856B6765D484}.Debug|x64.ActiveCfg = Debug|x64
+		{2814091E-04EF-42EA-A67C-856B6765D484}.Debug|x64.Build.0 = Debug|x64
+		{2814091E-04EF-42EA-A67C-856B6765D484}.Debug|x86.ActiveCfg = Debug|Win32
+		{2814091E-04EF-42EA-A67C-856B6765D484}.Debug|x86.Build.0 = Debug|Win32
+		{2814091E-04EF-42EA-A67C-856B6765D484}.Release|x64.ActiveCfg = Release|x64
+		{2814091E-04EF-42EA-A67C-856B6765D484}.Release|x64.Build.0 = Release|x64
+		{2814091E-04EF-42EA-A67C-856B6765D484}.Release|x86.ActiveCfg = Release|Win32
+		{2814091E-04EF-42EA-A67C-856B6765D484}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
