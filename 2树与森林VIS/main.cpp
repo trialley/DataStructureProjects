@@ -6,6 +6,7 @@ using namespace std;
 template <typename T>
 class TreeNode {
 public:
+
 	TreeNode () : _index (0), _parent (0), _leftChild (0), _rightChild (0), _firstChild (0), _nextSibling (0), _data (0) {}
 	TreeNode (int index, T data) : _index (index), _data (data), _parent (0), _leftChild (0), _rightChild (0), _firstChild (0), _nextSibling (0) {}
 	~TreeNode () {
@@ -527,7 +528,7 @@ public:
 	ostream& show (ostream& out) {
 		if (_state == FOREST) {
 			//showForest (out);
-
+			printForest ();
 
 
 
@@ -541,12 +542,50 @@ public:
 
 
 //////////////////打印
+	void printForest () {
+		for (int i = 0; i < 10; i++) {
+
+			treedown[i] = 1;
+		}
+		showTree (_root, 0);
+	}
+	void printForestin (TreeNode<T>* rootin, int& row, int deepthin) {
+		
+
+	}
+	bool treedown[10];
+	void showTree (TreeNode<T>* rootin,int deepth) {
+
+		for (int i = 1; i <= deepth; i++) {
+			if (treedown[i] == true) {
+				cout << "│ ";
+			} else {
+				cout << "  ";
+			}
+
+		}
+
+		if (rootin->getNextSibling () != NULL) {
+			cout << "├ ";
+
+		} else {
+			cout << "└ ";
+			treedown[deepth+1] = 0;
+		}
+		cout<< rootin->getIndex () /*<< ";Data:" << rootin->getData () */ << endl;
+		if (rootin->getFirstChild () != NULL)
+			showTree (rootin->getFirstChild (),deepth + 1);
+
+		if (rootin->getNextSibling () != NULL)
+			showTree (rootin->getNextSibling (),deepth);
+
+	}
 	void printBTree () {
 		for (int i = 0; i < 1000; i++) {
 			for (int j = 0; j < 1000; j++) {
 				charmap[i][j] = ' ';
 			}
-			charmap[i][1000-1] = '\0';
+			charmap[i][1000 - 1] = '\0';
 
 		}
 		int row = 0;
@@ -595,6 +634,11 @@ public:
 
 
 	}
+
+
+
+
+
 protected:
 	enum state _state;
 
@@ -667,9 +711,9 @@ int main () {
 
 		}
 		tree->addLeftSubTreeByIndex (&nodes[rootIndex], 0);
-		Sleep (500);
-		system ("cls");
-		tree->show (cout);
+		//Sleep (500);
+		//system ("cls");
+		//tree->show (cout);
 	}
 
 	//进行树的操作
@@ -696,10 +740,13 @@ int main () {
 				K = 1;
 			} else {
 
-				Sleep (1000);
-				system ("cls");
-				tree->show (cout);
+				//Sleep (1000);
+				//system ("cls");
+				//tree->show (cout);
 				tree->ConvertToForest ();
+				//Sleep (1000);
+				system ("cls");
+				tree->printForest ();
 				K = 0;
 			}
 		} else if (op == 5) {
@@ -710,9 +757,9 @@ int main () {
 				tree->addLeftSubTreeByIndex (&nodes[node], father);
 
 
-			Sleep (1000);
-			system ("cls");
-			tree->show (cout);
+			//Sleep (1000);
+			//system ("cls");
+			//tree->show (cout);
 		} else {
 			if (K == 0)
 				tree->TreePreorderTraversal ();
