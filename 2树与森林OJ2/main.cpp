@@ -3,137 +3,190 @@
 #include <vector>
 using namespace std;
 
-template <typename T>
-class TreeNode {
+/*template <typename K,typename V>
+class TNode {
+private:
+	TNode* _parent;//指向父节点
+	TNode* _left;//指向左子节点
+	TNode* _right;//指向右子节点
+
+	//树的部分采用链表表示
+	TNode* _sub;//指向树的第一个子节点
+	TNode* _next;//指向树的兄弟节点
+
+	int _index;//OJ上输入的索引
+	V _data;//数据
 public:
-	TreeNode () : _index (0), _parent (0), _leftChild (0), _rightChild (0), _firstChild (0), _nextSibling (0), _data (0) {}
-	TreeNode (int index, T data) : _index (index), _data (data), _parent (0), _leftChild (0), _rightChild (0), _firstChild (0), _nextSibling (0) {}
-	~TreeNode () {
-		if (_leftChild != nullptr) {
-			_leftChild->BTreeDeleteAll ();
-			_leftChild = nullptr;
+	TNode ()
+	TNode (int index, V data)
+	~TNode ()
+
+	int getIndex ()
+	V getData ()
+	TNode<K, V>* getParent ()
+	TNode<K, V>* getLChild ()
+	TNode<K, V>* getRChild ()
+	TNode<K, V>* getFirstChild ()
+	TNode<K, V>* getNextSibling ()
+
+	int BPreorder ()
+	int TPreorder ()
+	void BTreeToTree ()
+	void TreeToBTree ()
+
+	void setIndex (int index)
+	void setData (V data)
+	void setParenet (TNode* Node)
+	void setLChild (TNode* Node)
+	void setRChild (TNode* Node)
+	void setFirstChild (TNode* Node)
+	void setNextSibling (TNode* Node)
+	void setChild (TNode* Node)
+	TNode<K, V>* BiNodeSearch (int index)
+	TNode<K, V>* Tsearch (int index)
+	int NodeLeavesCount (int leaves)
+	int getBTChildrenNum ()
+	int deleteBAll ()
+	int deleteTNode ()
+};
+*/
+template <typename K,typename V>
+class TNode {
+private:
+	TNode* _parent;//指向父节点
+	TNode* _left;//指向左子节点
+	TNode* _right;//指向右子节点
+
+	/*树的部分采用链表表示*/
+	TNode* _sub;//指向树的第一个子节点
+	TNode* _next;//指向树的兄弟节点
+	
+	int _index;//OJ上输入的索引
+	V _data;//数据
+public:
+	TNode () : _index (0), _parent (0), _left (0), _right (0), _sub (0), _next (0), _data (0) {}
+	TNode (int index, V data) : _index (index), _data (data), _parent (0), _left (0), _right (0), _sub (0), _next (0) {}
+	~TNode () {
+		if (_left != nullptr) {
+			_left->deleteBAll ();
+			_left = nullptr;
 		}
 
-		if (_rightChild != nullptr) {
-			_rightChild->BTreeDeleteAll ();
-			_rightChild = nullptr;
+		if (_right != nullptr) {
+			_right->deleteBAll ();
+			_right = nullptr;
 		}
 
-		if (_firstChild != nullptr) {
-			_firstChild->TreeNodeDelete ();
-			_firstChild = nullptr;
+		if (_sub != nullptr) {
+			_sub->deleteTNode ();
+			_sub = nullptr;
 		}
 
-		if (_nextSibling != nullptr) {
-			_nextSibling->TreeNodeDelete ();
-			_nextSibling = nullptr;
+		if (_next != nullptr) {
+			_next->deleteTNode ();
+			_next = nullptr;
 		}
 		_parent = nullptr;
 	}
 
-	//get data
+
 	int getIndex () { return _index; }
-	T getData () { return _data; }
-	TreeNode<T>* getParent () { return _parent; }
-	TreeNode<T>* getLChild () { return _leftChild; }
-	TreeNode<T>* getRChild () { return _rightChild; }
-	TreeNode<T>* getFirstChild () { return _firstChild; }
-	TreeNode<T>* getNextSibling () { return _nextSibling; }
+	V getData () { return _data; }
+	TNode<K,V>* getParent () { return _parent; }
+	TNode<K,V>* getLChild () { return _left; }
+	TNode<K,V>* getRChild () { return _right; }
+	TNode<K,V>* getFirstChild () { return _sub; }
+	TNode<K,V>* getNextSibling () { return _next; }
 
 	void setIndex (int index) { _index = index; }
-	void setData (T data) { _data = data; }
-	void setParenet (TreeNode* Node) { _parent = Node; }
-	void setLChild (TreeNode* Node) {
-		_leftChild = Node;
+	void setData (V data) { _data = data; }
+	void setParenet (TNode* Node) { _parent = Node; }
+	void setLChild (TNode* Node) {
+		_left = Node;
 		if (Node != nullptr) Node->setParenet (this);
 	}
-	void setRChild (TreeNode* Node) {
-		_rightChild = Node;
+	void setRChild (TNode* Node) {
+		_right = Node;
 		if (Node != nullptr) Node->setParenet (this);
 	}
-	void setFirstChild (TreeNode* Node) { _firstChild = Node; }
-	void setNextSibling (TreeNode* Node) { _nextSibling = Node; }
-	void setChild (TreeNode* Node) {	 //无孩子的情况
-		if (_firstChild == nullptr) {
-			_firstChild = Node;
+	void setFirstChild (TNode* Node) { _sub = Node; }
+	void setNextSibling (TNode* Node) { _next = Node; }
+	void setChild (TNode* Node) {
+		if (_sub == nullptr) {
+			_sub = Node;
 			Node->setParenet (this);
 		}
-		//第一个孩子的索引值大于Node的索引值的情况
-		else if (Node->getIndex () < _firstChild->getIndex ()) {
+
+		else if (Node->getIndex () < _sub->getIndex ()) {
 			Node->setParenet (this);
-			Node->setNextSibling (_firstChild);
-			_firstChild = Node;
+			Node->setNextSibling (_sub);
+			_sub = Node;
 		} else {
-			//找到所有的孩子中索引值不小于Node的最大节点
-			TreeNode<T>* pTempNode = _firstChild;
-			while (pTempNode->getNextSibling () != nullptr &&
-				pTempNode->getNextSibling ()->getIndex () < Node->getIndex ())
-				pTempNode = pTempNode->getNextSibling ();
-			//该节点无下一个兄弟节点
-			if (pTempNode->getNextSibling () == nullptr) {
-				pTempNode->setNextSibling (Node);
+			TNode<K,V>* ptemp_node = _sub;
+			while (ptemp_node->getNextSibling () != nullptr &&
+				ptemp_node->getNextSibling ()->getIndex () < Node->getIndex ())
+				ptemp_node = ptemp_node->getNextSibling ();
+			if (ptemp_node->getNextSibling () == nullptr) {
+				ptemp_node->setNextSibling (Node);
 				Node->setParenet (this);
-			} else {  //该节点在两个节点之间
+			} else {
 				Node->setParenet (this);
-				Node->setNextSibling (pTempNode->getNextSibling ());
-				pTempNode->setNextSibling (Node);
+				Node->setNextSibling (ptemp_node->getNextSibling ());
+				ptemp_node->setNextSibling (Node);
 			}
 		}
 	}
 
-	/*-----------------------others------------------------*/
-	TreeNode<T>* BiNodeSearch (int index) {
-		TreeNode<T>* tempNode = nullptr;
+	TNode<K,V>* BiNodeSearch (int index) {
+		TNode<K,V>* temp_node = nullptr;
 		if (_index == index) {
 			return this;
 		}
-		if (_leftChild != nullptr) {
-			tempNode = _leftChild->BiNodeSearch (index);
-			if (tempNode != nullptr) {
-				return tempNode;
+		if (_left != nullptr) {
+			temp_node = _left->BiNodeSearch (index);
+			if (temp_node != nullptr) {
+				return temp_node;
 			}
 		}
 
-		if (_rightChild != nullptr) {
-			tempNode = _rightChild->BiNodeSearch (index);
-			if (tempNode != nullptr) {
-				return tempNode;
+		if (_right != nullptr) {
+			temp_node = _right->BiNodeSearch (index);
+			if (temp_node != nullptr) {
+				return temp_node;
 			}
 		}
 		return nullptr;
 	}
 
-	TreeNode<T>* TreeNodeSearch (int index) {
-		TreeNode<T>* tempNode = nullptr;
+	TNode<K,V>* Tsearch (int index) {
+		TNode<K,V>* temp_node = nullptr;
 
 		if (_index == index) {
 			return this;
 		}
-		if (_firstChild != nullptr) {
-			tempNode = _firstChild->TreeNodeSearch (index);
-			if (tempNode != nullptr) {
-				return tempNode;
+		if (_sub != nullptr) {
+			temp_node = _sub->Tsearch (index);
+			if (temp_node != nullptr) {
+				return temp_node;
 			}
 		}
 
-		if (_nextSibling != nullptr) {
-			tempNode = _nextSibling->TreeNodeSearch (index);
-			if (tempNode != nullptr) {
-				return tempNode;
+		if (_next != nullptr) {
+			temp_node = _next->Tsearch (index);
+			if (temp_node != nullptr) {
+				return temp_node;
 			}
 		}
 
 		return nullptr;
 	}
-
-	/*查询子树的叶子数*/
 
 	int NodeLeavesCount (int leaves) {
-		if (this->_leftChild != nullptr)
-			leaves = this->_leftChild->NodeLeavesCount (leaves);
+		if (this->_left != nullptr)
+			leaves = this->_left->NodeLeavesCount (leaves);
 
-		if (this->_rightChild != nullptr)
-			leaves = this->_rightChild->NodeLeavesCount (leaves);
+		if (this->_right != nullptr)
+			leaves = this->_right->NodeLeavesCount (leaves);
 
 		if (this->getLChild () == nullptr && this->getRChild () == nullptr)
 			leaves++;
@@ -141,48 +194,30 @@ public:
 		return leaves;
 	}
 
-	/*查询二叉子树的节点数(包括自己)*/
-
-	int BiNodeChildrenCount () {
+	int getBTChildrenNum () {
 		int biCnt = 0;
 
-		if (this->_leftChild != nullptr)
-			biCnt += this->_leftChild->BiNodeChildrenCount ();
+		if (this->_left != nullptr)
+			biCnt += this->_left->getBTChildrenNum ();
 
-		if (this->_rightChild != nullptr)
-			biCnt += this->_rightChild->BiNodeChildrenCount ();
+		if (this->_right != nullptr)
+			biCnt += this->_right->getBTChildrenNum ();
 
 		biCnt++;
 		return biCnt;
 	}
 
-	/*查询子树的节点数(包括自己)*/
 
-	int TreeNodeChildrenCount () {
-		int tiCnt = 0;
-
-		if (this->_firstChild != nullptr)
-			tiCnt += this->_firstChild->TreeNodeChildrenCount ();
-
-		if (this->_nextSibling != nullptr)
-			tiCnt += this->_nextSibling->TreeNodeChildrenCount ();
-
-		tiCnt++;
-		return tiCnt;
-	}
-
-	/*删除二叉子树的所有节点*/
-
-	int BTreeDeleteAll () {
+	int deleteBAll () {
 		int Times = 0;
-		if (this->_leftChild != nullptr) {
-			Times += this->_leftChild->BTreeDeleteAll ();
-			this->_leftChild = nullptr;
+		if (this->_left != nullptr) {
+			Times += this->_left->deleteBAll ();
+			this->_left = nullptr;
 		}
 
-		if (this->_rightChild != nullptr) {
-			Times += this->_rightChild->BTreeDeleteAll ();
-			this->_rightChild = nullptr;
+		if (this->_right != nullptr) {
+			Times += this->_right->deleteBAll ();
+			this->_right = nullptr;
 		}
 
 		Times++;
@@ -190,18 +225,16 @@ public:
 		return Times;
 	}
 
-	/*删除子树的所有节点*/
-
-	int TreeNodeDelete () {
+	int deleteTNode () {
 		int Times = 0;
-		if (this->_firstChild != nullptr) {
-			Times += this->_firstChild->TreeNodeDelete ();
-			this->_firstChild = nullptr;
+		if (this->_sub != nullptr) {
+			Times += this->_sub->deleteTNode ();
+			this->_sub = nullptr;
 		}
 
-		if (this->_nextSibling != nullptr) {
-			Times += this->_nextSibling->TreeNodeDelete ();
-			this->_nextSibling = nullptr;
+		if (this->_next != nullptr) {
+			Times += this->_next->deleteTNode ();
+			this->_next = nullptr;
 		}
 
 		Times++;
@@ -209,212 +242,157 @@ public:
 		return Times;
 	}
 
-	/*-----------------------traversal------------------------*/
-
-	int BiNodePreorderTraversal () {
-		//cout<<"Index:"<<this->getIndex()<<";Data:"<<this->getData()<<endl;
+	int BPreorder () {
 		int res = this->getIndex ();
-
 		if (this->getLChild () != nullptr)
-			res ^= this->getLChild ()->BiNodePreorderTraversal ();
-
+			res ^= this->getLChild ()->BPreorder ();
 		if (this->getRChild () != nullptr)
-			res ^= this->getRChild ()->BiNodePreorderTraversal ();
-
+			res ^= this->getRChild ()->BPreorder ();
 		return res;
 	}
 
-	int TreeNodePreorderTraversal () {
-		//cout<<"Index:"<<this->getIndex()<<";Data:"<<this->getData()<<endl;
-
+	int TPreorder () {
 		int res = this->getIndex ();
 		if (this->getFirstChild () != nullptr)
-			res ^= this->getFirstChild ()->TreeNodePreorderTraversal ();
-
+			res ^= this->getFirstChild ()->TPreorder ();
 		if (this->getNextSibling () != nullptr)
-			res ^= this->getNextSibling ()->TreeNodePreorderTraversal ();
-
+			res ^= this->getNextSibling ()->TPreorder ();
 		return res;
 	}
 
-	//加入0号根节点后，处理二叉树应该有一定的规律
-	void ConvertToTree () {
-		TreeNode<T>* pLeftNode = this->getLChild ();
-
-		//this节点的右孩子节点或者没有或者已经处理过了，若无左孩子节点，返回即可
+	void BTreeToTree () {
+		TNode<K,V>* pLeftNode = this->getLChild ();
 		if (pLeftNode == nullptr)
 			return;
-
-		//处理左孩子，左孩子的右孩子节点，以及左孩子的右孩子的右孩子节点等
-		TreeNode<T>* pPNode = pLeftNode;
-		TreeNode<T>* pRNode;
-		while (pPNode != nullptr) {
-			pRNode = pPNode->getRChild ();
-			pPNode->setRChild (nullptr);
-
-			this->setChild (pPNode);
-			pPNode->ConvertToTree ();
-
-			pPNode = pRNode;
+		TNode<K,V>* pnode_in = pLeftNode;
+		TNode<K,V>* pRNode;
+		while (pnode_in != nullptr) {
+			pRNode = pnode_in->getRChild ();
+			pnode_in->setRChild (nullptr);
+			this->setChild (pnode_in);
+			pnode_in->BTreeToTree ();
+			pnode_in = pRNode;
 		}
 	}
 
-	//应该也是递归
-	void ConvertToBTree () {
-		TreeNode<T>* pFirstChild = this->getFirstChild ();
-		TreeNode<T>* pNextSibling = this->getNextSibling ();
+	void TreeToBTree () {
+		TNode<K,V>* pFirstChild = this->getFirstChild ();
+		TNode<K,V>* pNextSibling = this->getNextSibling ();
 
-		//长子为左孩子，下一个兄弟为右孩子
 		this->setLChild (pFirstChild);
 		this->setRChild (pNextSibling);
 		this->setFirstChild (nullptr);
 		this->setNextSibling (nullptr);
 
-		if (pFirstChild != nullptr) pFirstChild->ConvertToBTree ();
-
-		if (pNextSibling != nullptr) pNextSibling->ConvertToBTree ();
+		if (pFirstChild != nullptr) pFirstChild->TreeToBTree ();
+		if (pNextSibling != nullptr) pNextSibling->TreeToBTree ();
 	}
-
-private:
-	int _index;	 //索引
-	T _data;	 //值
-
-	TreeNode* _parent;		 //父亲节点
-	TreeNode* _leftChild;	 //左孩子节点
-	TreeNode* _rightChild;	 //右孩子节点
-	TreeNode* _firstChild;	 //长子节点
-	TreeNode* _nextSibling;	 //兄弟节点
 };
 
-template <typename T>
+
+/*
+template <typename K, typename V>
+class Tree {
+protected:
+	TNode<K, V>* _root;	//指向根节点
+	int _size;			//节点数目
+public:
+	Tree (K index, V data)
+	Tree ()
+	bool isEmpty ()
+	bool setLeft (TNode<K, V>* node_in, K target)
+	bool setRight (TNode<K, V>* node_in, K target)
+	bool setSub (TNode<K, V>* node_in, K target)
+	bool setSubTo (K nwe_target, V data, K target)
+	void addEdge (int a, int b)
+	void BTreeToTree ()
+	void TreeToBTree ()
+	bool deleteTreeNodeByIndex (int index)
+	bool deleteTreeNodeByNode (TNode<K, V>* node_in)
+	void BPreorder ()
+	void TreePreorder ()
+};*/
+template <typename K, typename V>
 class Tree {
 public:
-	Tree (int size, int index, T data) : _root (new TreeNode<T> (index, data)), _size (1), _maxSize (size) {}
-	Tree (int size) : _root (new TreeNode<T> (0, 0)), _size (1), _maxSize (size) {}
+	Tree ( K index, V data) : _root (new TNode<K,V> (index, data)), _size (1) {}
+	Tree () : _root (new TNode<K,V> (0, 0)), _size (1){}
 	~Tree () {
 		if (_root != nullptr) delete _root;
 		_root = nullptr;
 	}
 
-	bool IsTreeEmpty ();	 //树是否为空
-	bool IsTreeFull ();	 //树的容量是否已满
+	bool isEmpty () { return _root; }
 
-	//search
-	TreeNode<T>* getBiNodeByIndex (int index);  //通过索引搜索节点
-	TreeNode<T>* getTreeNodeByIndex (int index);
-	int getLeaves ();	 //获取树的叶子数
-	int getHeight ();	 //获取树的高度(包含根节点)
-	int getWidth ();		 //获取树的宽度(包含根节点)
-	int getNowBiSize ();	 //获取树现在的节点数（包含根节点）
-	int getNowTreeSize ();
-	int getMaxSize ();  //获取树的最大节点数
-
-	bool addLeftSubTreeByIndex (TreeNode<T>* pNode, int searchIndex) {
+	bool setLeft (TNode<K,V>* node_in, K target) {
 		if (_root == nullptr) return false;
-		TreeNode<T>* tempNode;
-		tempNode = _root->BiNodeSearch (searchIndex);  //通过索引找到该节点
+		TNode<K,V>* temp_node;
+		temp_node = _root->BiNodeSearch (target);
 
-		tempNode->setLChild (pNode);
-		_size += pNode->BiNodeChildrenCount ();
+		temp_node->setLChild (node_in);
+		_size += node_in->getBTChildrenNum ();
 		return true;
 	}
 
-	bool addRightSubTreeByIndex (TreeNode<T>* pNode, int searchIndex) {
+	bool setRight (TNode<K,V>* node_in, K target) {
 		if (_root == nullptr) return false;
-		TreeNode<T>* tempNode;
-		tempNode = _root->BiNodeSearch (searchIndex);  //通过索引找到该节点
+		TNode<K,V>* temp_node;
+		temp_node = _root->BiNodeSearch (target);
 
-		tempNode->setRChild (pNode);
+		temp_node->setRChild (node_in);
 
 		return true;
 	}
 
-	bool addSubTreeByIndex (TreeNode<T>* pNode, int searchIndex) {
+	bool setSub (TNode<K,V>* node_in, K target) {
 		if (_root == nullptr)
 			return false;
 
-		TreeNode<T>* tempNode;
-		tempNode = _root->TreeNodeSearch (searchIndex);	//通过索引找到该节点
-		tempNode->setChild (pNode);
+		TNode<K,V>* temp_node;
+		temp_node = _root->Tsearch (target);
+		temp_node->setChild (node_in);
 		return true;
 	}
 
-	bool addChildNodeByIndex (int newIndex, T data, int searchIndex) {
+	bool setSubTo (K nwe_target, V data, K target) {
 		if (_root == nullptr)
 			return false;
 
-		TreeNode<T>* tempNode;
-		tempNode = _root->TreeNodeSearch (searchIndex);	//通过索引找到该节点
+		TNode<K,V>* temp_node;
+		temp_node = _root->Tsearch (target);
 
-		if (tempNode != nullptr) {
-			//cout << tempNode->getIndex() << endl;
-			return addChildNodeByNode (newIndex, data, tempNode);
+		if (temp_node != nullptr) {
+			return addChild (nwe_target, data, temp_node);
 		}
 
 		return false;
 	}
 
-	bool addChildNodeByNode (int index, T data, TreeNode<T>* pNode) {
-		TreeNode<T>* pNodeCopy = pNode;	 //做pNode的副本，防止pNode的被意外修改
-
-		if (IsTreeFull ()) return false;
-		//得到长子节点
-		TreeNode<T>* pFirstChildNode = pNodeCopy->getFirstChild ();
-		TreeNode<T>* newNode = new TreeNode<T> (index, data);
-		if (pFirstChildNode == nullptr) {
-			pNodeCopy->setFirstChild (newNode);
-			newNode->setParenet (pNodeCopy);
-		} else if (index < pFirstChildNode->getIndex ()) {
-			pNodeCopy->setFirstChild (newNode);
-			newNode->setParenet (pNodeCopy);
-			newNode->setNextSibling (pFirstChildNode);
-		} else {
-			//找到索引值不小于index的最大节点
-			TreeNode<T>* pTempNode = pFirstChildNode;
-			while (pTempNode->getNextSibling () != nullptr &&
-				pTempNode->getNextSibling ()->getIndex () < index)
-				pTempNode = pTempNode->getNextSibling ();
-			//该节点无下一个兄弟节点
-			if (pTempNode->getNextSibling () == nullptr) {
-				pTempNode->setNextSibling (newNode);
-				newNode->setParenet (pNodeCopy);
-			} else {
-				newNode->setParenet (pNodeCopy);
-				newNode->setNextSibling (pTempNode->getNextSibling ());
-				pTempNode->setNextSibling (newNode);
-			}
-		}
-		_size++;
-		return true;
-	}
-
 	void addEdge (int a, int b) {
-		TreeNode<T>* nodeA, * nodeB, * tempNode;
+		TNode<K,V>* nodeA, * nodeB, * temp_node;
 
-		nodeA = _root->TreeNodeSearch (a);
-		nodeB = _root->TreeNodeSearch (b);
+		nodeA = _root->Tsearch (a);
+		nodeB = _root->Tsearch (b);
 		if (a < b) {
-			tempNode = nodeA;
-			//找到nodeB的前一个兄弟节点
-			while (tempNode->getNextSibling () != nodeB)
-				tempNode = tempNode->getNextSibling ();
+			temp_node = nodeA;
+			while (temp_node->getNextSibling () != nodeB)
+				temp_node = temp_node->getNextSibling ();
 
-			tempNode->setNextSibling (nodeB->getNextSibling ());
+			temp_node->setNextSibling (nodeB->getNextSibling ());
 			nodeB->setNextSibling (nullptr);
 			nodeB->setParenet (nodeA);
 			nodeA->setChild (nodeB);
 		} else if (a > b) {
-			//b是长子,将b的下一个兄弟节点作为长子
 			if (_root->getFirstChild () == nodeB) {
-				TreeNode<T>* NextSiblingNode = nodeB->getNextSibling ();
+				TNode<K,V>* NextSiblingNode = nodeB->getNextSibling ();
 				_root->setFirstChild (NextSiblingNode);
 				nodeB->setNextSibling (nullptr);
 				nodeA->setChild (nodeB);
 			} else {
-				tempNode = _root->getFirstChild ();
-				while (tempNode->getNextSibling () != nodeB)
-					tempNode = tempNode->getNextSibling ();
-				tempNode->setNextSibling (nodeB->getNextSibling ());
+				temp_node = _root->getFirstChild ();
+				while (temp_node->getNextSibling () != nodeB)
+					temp_node = temp_node->getNextSibling ();
+				temp_node->setNextSibling (nodeB->getNextSibling ());
 				nodeB->setNextSibling (nullptr);
 				nodeB->setParenet (nodeA);
 				nodeA->setChild (nodeB);
@@ -422,10 +400,8 @@ public:
 		}
 	}
 
-	//delete
-
 	bool deleteTreeNodeByIndex (int index) {
-		TreeNode<T>* deleteNode = _root->TreeNodeSearch (index);
+		TNode<K,V>* deleteNode = _root->Tsearch (index);
 
 		if (deleteNode != nullptr) {
 			if (deleteNode == _root) {
@@ -437,15 +413,12 @@ public:
 		return false;
 	}
 
-	bool deleteTreeNodeByNode (TreeNode<T>* pNode) {
-		if (pNode != nullptr) {
-			//先看是否有孩子节点
-			TreeNode<T>* pFirstChildNode = pNode->getFirstChild ();
-
-			//有孩子节点先将孩子节点都作为0号节点的子孩子
+	bool deleteTreeNodeByNode (TNode<K,V>* node_in) {
+		if (node_in != nullptr) {
+			TNode<K,V>* pFirstChildNode = node_in->getFirstChild ();
 			if (pFirstChildNode != nullptr) {
-				TreeNode<T>* pChildNode = pFirstChildNode;
-				TreeNode<T>* pNextSiblingNode;
+				TNode<K,V>* pChildNode = pFirstChildNode;
+				TNode<K,V>* pNextSiblingNode;
 				while (pChildNode != nullptr) {
 					pNextSiblingNode = pChildNode->getNextSibling ();
 					_root->setChild (pChildNode);
@@ -453,43 +426,40 @@ public:
 				}
 			}
 
-			pNode->setFirstChild (nullptr);
-
-			//处理完孩子节点再处理兄弟链表
-			TreeNode<T>* pParentNode = pNode->getParent ();
-			TreeNode<T>* pCNode = pParentNode->getFirstChild ();
-			if (pCNode == pNode) {
-				pParentNode->setFirstChild (pNode->getNextSibling ());
+			node_in->setFirstChild (nullptr);
+			TNode<K,V>* pParentNode = node_in->getParent ();
+			TNode<K,V>* pCNode = pParentNode->getFirstChild ();
+			if (pCNode == node_in) {
+				pParentNode->setFirstChild (node_in->getNextSibling ());
 			} else {
-				while (pCNode->getNextSibling () != pNode) {
+				while (pCNode->getNextSibling () != node_in) {
 					pCNode = pCNode->getNextSibling ();
 				}
-				pCNode->setNextSibling (pNode->getNextSibling ());
+				pCNode->setNextSibling (node_in->getNextSibling ());
 			}
 
-			pNode->setNextSibling (nullptr);
-			pNode->setFirstChild (nullptr);
+			node_in->setNextSibling (nullptr);
+			node_in->setFirstChild (nullptr);
 			return true;
 		}
 
 		return false;
 	}
 
-	void BiPreorderTraversal () {
+	void BPreorder () {
 		if (_root == nullptr) return;
-		cout << _root->getLChild ()->BiNodePreorderTraversal () << endl;
+		cout << _root->getLChild ()->BPreorder () << endl;
 	}
 
-	void TreePreorderTraversal () {
+	void TreePreorder () {
 		if (_root == nullptr) return;
 
-		TreeNode<T>* pFirstNode = _root->getFirstChild ();
-		TreeNode<T>* pSiblingNode;
+		TNode<K,V>* pFirstNode = _root->getFirstChild ();
+		TNode<K,V>* pSiblingNode;
 
 		int res = pFirstNode->getIndex ();
-		//cout << res << endl;
 		if (pFirstNode->getFirstChild () != nullptr)
-			res ^= pFirstNode->getFirstChild ()->TreeNodePreorderTraversal ();
+			res ^= pFirstNode->getFirstChild ()->TPreorder ();
 
 		pSiblingNode = pFirstNode->getNextSibling ();
 		cout << res << " ";
@@ -497,7 +467,7 @@ public:
 		while (pSiblingNode != nullptr) {
 			res = pSiblingNode->getIndex ();
 			if (pSiblingNode->getFirstChild () != nullptr)
-				res ^= pSiblingNode->getFirstChild ()->TreeNodePreorderTraversal ();
+				res ^= pSiblingNode->getFirstChild ()->TPreorder ();
 			if (pSiblingNode->getNextSibling () != nullptr) {
 				cout << res << " ";
 			} else {
@@ -508,38 +478,34 @@ public:
 		cout << endl;
 	}
 
-	void ConvertToTree () { _root->ConvertToTree (); }
-	void ConvertToBTree () { _root->ConvertToBTree (); }
+	void BTreeToTree () { _root->BTreeToTree (); }
+	void TreeToBTree () { _root->TreeToBTree (); }
 
 protected:
-	TreeNode<T>* _root;	 //树根节点
-	int _size;			 //当前树的节点数(不包括根节点)
-	int _maxSize;		 //树的最大节点数(不包括根节点)
+	TNode<K,V>* _root;//指向根节点
+	int _size;//节点数目
 };
 
 #pragma warning(disable : 4996)
 int main () {
-	freopen ("in2.txt", "r", stdin);
+	freopen ("in1.txt", "r", stdin);
 
 	int i, j, K, M, N, Q, node, rootIndex, pos;
-	Tree<int>* tree = new Tree<int> (5302, 0, 0);
+	Tree<int,int>* tree = new Tree<int,int>;
 
-	//节点初始化
-	TreeNode<int>* nodes = new TreeNode<int>[5302];
+	TNode<int,int>* nodes = new TNode<int,int>[10000];
 	for (i = 0; i < 5102; i++) {
 		nodes[i].setIndex (i);
 	}
 
 	cin >> K >> M >> N;
 
-	//K=0初始化森林
 	if (K == 0) {
-		//M为树根节点的个数
+
 		int* roots = new int[M];
 		int A, B;
 		for (i = 0; i < M; i++) cin >> roots[i];
 
-		//A节点有B个孩子
 		for (i = 0; i < N; i++) {
 			cin >> A >> B;
 			for (j = 0; j < B; j++) {
@@ -549,7 +515,7 @@ int main () {
 		}
 
 		for (i = 0; i < M; i++) {
-			tree->addSubTreeByIndex (&nodes[roots[i]], 0);
+			tree->setSub (&nodes[roots[i]], 0);
 		}
 	} else {
 		int A, l, r;
@@ -569,10 +535,9 @@ int main () {
 			else
 				nodes[A].setRChild (&nodes[r]);
 		}
-		tree->addLeftSubTreeByIndex (&nodes[rootIndex], 0);
+		tree->setLeft (&nodes[rootIndex], 0);
 	}
 
-	//进行树的操作
 	cin >> Q;
 	int op, father, a, b;
 	for (i = 0; i < Q; i++) {
@@ -580,9 +545,9 @@ int main () {
 		if (op == 1) {
 			cin >> father >> node;
 			if (father == -1) {
-				tree->addSubTreeByIndex (&nodes[node], 0);
+				tree->setSub (&nodes[node], 0);
 			} else {
-				tree->addSubTreeByIndex (&nodes[node], father);
+				tree->setSub (&nodes[node], father);
 			}
 		} else if (op == 2) {
 			cin >> father >> node;
@@ -592,23 +557,23 @@ int main () {
 			tree->addEdge (a, b);
 		} else if (op == 4) {
 			if (K == 0) {
-				tree->ConvertToBTree ();
+				tree->TreeToBTree ();
 				K = 1;
 			} else {
-				tree->ConvertToTree ();
+				tree->BTreeToTree ();
 				K = 0;
 			}
 		} else if (op == 5) {
 			cin >> pos >> father >> node;
 			if (pos == 0)
-				tree->addRightSubTreeByIndex (&nodes[node], father);
+				tree->setRight (&nodes[node], father);
 			else
-				tree->addLeftSubTreeByIndex (&nodes[node], father);
+				tree->setLeft (&nodes[node], father);
 		} else {
 			if (K == 0)
-				tree->TreePreorderTraversal ();
+				tree->TreePreorder ();
 			else
-				tree->BiPreorderTraversal ();
+				tree->BPreorder ();
 		}
 	}
 	return 0;
