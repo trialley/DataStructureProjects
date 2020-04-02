@@ -238,7 +238,7 @@ public:
 	}
 
 	//加入0号根节点后，处理二叉树应该有一定的规律
-	void ConvertToTree () {
+	void ConvertToForest () {
 		TreeNode<T>* pLeftNode = this->getLChild ();
 
 		//this节点的右孩子节点或者没有或者已经处理过了，若无左孩子节点，返回即可
@@ -253,7 +253,7 @@ public:
 			pPNode->setRChild (nullptr);
 
 			this->setChild (pPNode);
-			pPNode->ConvertToTree ();
+			pPNode->ConvertToForest ();
 
 			pPNode = pRNode;
 		}
@@ -275,7 +275,8 @@ public:
 		if (pNextSibling != nullptr) pNextSibling->ConvertToBTree ();
 	}
 
-private:
+
+//private:
 	int _index;	 //索引
 	T _data;	 //值
 
@@ -289,6 +290,7 @@ private:
 template <typename T>
 class Tree {
 public:
+	enum state { FOREST, BTREE };
 	Tree (int size, int index, T data) : _root (new TreeNode<T> (index, data)), _size (1), _maxSize (size) {}
 	Tree (int size) : _root (new TreeNode<T> (0, 0)), _size (1), _maxSize (size) {}
 	~Tree () {
@@ -311,6 +313,7 @@ public:
 
 	bool addLeftSubTreeByIndex (TreeNode<T>* pNode, int searchIndex) {
 		if (_root == nullptr) return false;
+		_state = BTREE;
 		TreeNode<T>* tempNode;
 		tempNode = _root->BiNodeSearch (searchIndex);  //通过索引找到该节点
 
@@ -332,6 +335,7 @@ public:
 	bool addSubTreeByIndex (TreeNode<T>* pNode, int searchIndex) {
 		if (_root == nullptr)
 			return false;
+		_state = FOREST;
 
 		TreeNode<T>* tempNode;
 		tempNode = _root->TreeNodeSearch (searchIndex);	//通过索引找到该节点
@@ -508,14 +512,105 @@ public:
 		cout << endl;
 	}
 
-	void ConvertToTree () { _root->ConvertToTree (); }
-	void ConvertToBTree () { _root->ConvertToBTree (); }
+	void ConvertToForest () { 
+		_state = FOREST;
+		_root->ConvertToForest ();
+	}
+	void ConvertToBTree () { 
+		_state = BTREE;
+		
+		_root->ConvertToBTree ();
+	}
+	enum state getState () { return _state; }
 
+
+	ostream& show (ostream& out) {
+		if (_state == FOREST) {
+			//showForest (out);
+
+
+
+
+		} else if(_state == BTREE) {
+			//showBtree (out);
+			printBTree ();
+		}
+
+		return out;
+	}
+
+
+//////////////////打印
+	void printBTree () {
+		for (int i = 0; i < 1000; i++) {
+			for (int j = 0; j < 1000; j++) {
+				charmap[i][j] = ' ';
+			}
+			charmap[i][1000-1] = '\0';
+
+		}
+		int row = 0;
+		int deepth = 0;
+		printBTreein (_root, row, deepth);
+
+		for (int i = 0; i < 30; i++) {
+			cout << charmap[i] << endl;
+		}
+
+
+	}
+	int printBTreein (TreeNode<T>* rootin,int& row, int deepthin) {
+		if (rootin == nullptr) {
+			return row++;
+		}
+		int top= printBTreein(rootin->_leftChild,row, deepthin+1);
+
+		int me = row++;
+		if (top != me-1) {
+			charmap[top][deepthin * 3] = '/';
+			charmap[top][deepthin * 3 + 1] = '-';
+			charmap[top][deepthin * 3 + 2] = '-';
+		}
+		int bot= printBTreein (rootin->_rightChild, row, deepthin+1);
+		if (bot != me+1) {
+			charmap[bot][deepthin * 3] = '\\';
+			charmap[bot][deepthin * 3 + 1] = '-';
+			charmap[bot][deepthin * 3 + 2] = '-';
+		}
+
+									
+
+
+
+		for (int i = top + 1; i < bot; i++) {
+			charmap[i][deepthin*3] = '|';
+		}
+
+		charmap[me][deepthin*3] = '+';
+		sprintf(&charmap[me][deepthin * 3],"%d",rootin->_index);
+
+
+
+		return me;
+
+
+	}
 protected:
+	enum state _state;
+
+	char charmap[1000][1000]; //用于存放要打印的横向二叉树 
+
+	//void ConvertToForest () { _root->ConvertToForest (); }
+	//void ConvertToBTree () { _root->ConvertToBTree (); }
 	TreeNode<T>* _root;	 //树根节点
 	int _size;			 //当前树的节点数(不包括根节点)
 	int _maxSize;		 //树的最大节点数(不包括根节点)
 };
+
+
+#include <stdio.h>
+#include <windows.h>
+#include <stdlib.h>
 
 #pragma warning(disable : 4996)
 int main () {
@@ -552,6 +647,7 @@ int main () {
 			tree->addSubTreeByIndex (&nodes[roots[i]], 0);
 		}
 	} else {
+		//初始化二叉树
 		int A, l, r;
 
 		cin >> rootIndex;
@@ -568,8 +664,12 @@ int main () {
 				nodes[A].setRChild (nullptr);
 			else
 				nodes[A].setRChild (&nodes[r]);
+
 		}
 		tree->addLeftSubTreeByIndex (&nodes[rootIndex], 0);
+		Sleep (500);
+		system ("cls");
+		tree->show (cout);
 	}
 
 	//进行树的操作
@@ -595,7 +695,11 @@ int main () {
 				tree->ConvertToBTree ();
 				K = 1;
 			} else {
-				tree->ConvertToTree ();
+
+				Sleep (1000);
+				system ("cls");
+				tree->show (cout);
+				tree->ConvertToForest ();
 				K = 0;
 			}
 		} else if (op == 5) {
@@ -604,12 +708,19 @@ int main () {
 				tree->addRightSubTreeByIndex (&nodes[node], father);
 			else
 				tree->addLeftSubTreeByIndex (&nodes[node], father);
+
+
+			Sleep (1000);
+			system ("cls");
+			tree->show (cout);
 		} else {
 			if (K == 0)
 				tree->TreePreorderTraversal ();
 			else
 				tree->BiPreorderTraversal ();
 		}
+		//cout<<tree;
+
 	}
 	return 0;
 }
