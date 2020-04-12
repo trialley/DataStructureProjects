@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="loserTree.h" />
+    <ClInclude Include="externalSort.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="result.txt" />
+    <Text Include="source.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="externalSort.cpp" />
+  </ItemGroup>
+</Project>
