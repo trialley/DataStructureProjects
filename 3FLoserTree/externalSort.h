@@ -24,7 +24,7 @@ class externalsort {
 public:
     externalsort (int buf_size) :_bufferLength(buf_size){}
     ~externalsort () {}
-    void initTreeAndSplitFile () {
+    void split () {
         _clearfile (300);
 
         int num_per_file = 50;

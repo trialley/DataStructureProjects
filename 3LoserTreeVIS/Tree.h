@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <queue>
 #include <vector>
@@ -187,7 +188,7 @@ public:
 		}
 
 		Times++;
-		delete this;
+		//delete this;
 		return Times;
 	}
 
@@ -277,7 +278,7 @@ public:
 	}
 
 
-//private:
+	//private:
 	int _index;	 //索引
 	T _data;	 //值
 
@@ -513,13 +514,13 @@ public:
 		cout << endl;
 	}
 
-	void ConvertToForest () { 
+	void ConvertToForest () {
 		_state = FOREST;
 		_root->ConvertToForest ();
 	}
-	void ConvertToBTree () { 
+	void ConvertToBTree () {
 		_state = BTREE;
-		
+
 		_root->ConvertToBTree ();
 	}
 	enum state getState () { return _state; }
@@ -532,7 +533,7 @@ public:
 
 
 
-		} else if(_state == BTREE) {
+		} else if (_state == BTREE) {
 			//showBtree (out);
 			printBTree ();
 		}
@@ -541,7 +542,7 @@ public:
 	}
 
 
-//////////////////打印
+	//////////////////打印
 	void printForest () {
 		for (int i = 0; i < 10; i++) {
 
@@ -550,11 +551,11 @@ public:
 		showTree (_root, 0);
 	}
 	void printForestin (TreeNode<T>* rootin, int& row, int deepthin) {
-		
+
 
 	}
 	bool treedown[10];
-	void showTree (TreeNode<T>* rootin,int deepth) {
+	void showTree (TreeNode<T>* rootin, int deepth) {
 
 		for (int i = 1; i <= deepth; i++) {
 			if (treedown[i] == true) {
@@ -570,14 +571,14 @@ public:
 
 		} else {
 			cout << "└ ";
-			treedown[deepth+1] = 0;
+			treedown[deepth + 1] = 0;
 		}
-		cout<< rootin->getIndex () /*<< ";Data:" << rootin->getData () */ << endl;
+		cout << rootin->getIndex () /*<< ";Data:" << rootin->getData () */ << endl;
 		if (rootin->getFirstChild () != NULL)
-			showTree (rootin->getFirstChild (),deepth + 1);
+			showTree (rootin->getFirstChild (), deepth + 1);
 
 		if (rootin->getNextSibling () != NULL)
-			showTree (rootin->getNextSibling (),deepth);
+			showTree (rootin->getNextSibling (), deepth);
 
 	}
 	void printBTree () {
@@ -596,35 +597,35 @@ public:
 			cout << charmap[i] << endl;
 		}
 	}
-	int printBTreein (TreeNode<T>* rootin,int& row, int deepthin) {
+	int printBTreein (TreeNode<T>* rootin, int& row, int deepthin) {
 		if (rootin == nullptr) {
 			return row++;
 		}
-		int top= printBTreein(rootin->_leftChild,row, deepthin+1);
+		int top = printBTreein (rootin->_leftChild, row, deepthin + 1);
 
 		int me = row++;
-		if (top != me-1) {
+		if (top != me - 1) {
 			charmap[top][deepthin * 3] = '/';
 			charmap[top][deepthin * 3 + 1] = '-';
 			charmap[top][deepthin * 3 + 2] = '-';
 		}
-		int bot= printBTreein (rootin->_rightChild, row, deepthin+1);
-		if (bot != me+1) {
+		int bot = printBTreein (rootin->_rightChild, row, deepthin + 1);
+		if (bot != me + 1) {
 			charmap[bot][deepthin * 3] = '\\';
 			charmap[bot][deepthin * 3 + 1] = '-';
 			charmap[bot][deepthin * 3 + 2] = '-';
 		}
 
-									
+
 
 
 
 		for (int i = top + 1; i < bot; i++) {
-			charmap[i][deepthin*3] = '|';
+			charmap[i][deepthin * 3] = '|';
 		}
 
-		charmap[me][deepthin*3] = '+';
-		sprintf(&charmap[me][deepthin * 3],"%d",rootin->_index);
+		charmap[me][deepthin * 3] = '+';
+		sprintf (&charmap[me][deepthin * 3], "%d:%d", rootin->_index, rootin->_data);
 		return me;
 	}
 
@@ -643,124 +644,3 @@ protected:
 	int _size;			 //当前树的节点数(不包括根节点)
 	int _maxSize;		 //树的最大节点数(不包括根节点)
 };
-
-
-#include <stdio.h>
-#include <windows.h>
-#include <stdlib.h>
-
-#pragma warning(disable : 4996)
-int main () {
-	freopen ("in2.txt", "r", stdin);
-
-	int i, j, K, M, N, Q, node, rootIndex, pos;
-	Tree<int>* tree = new Tree<int> (5302, 0, 0);
-
-	//节点初始化
-	TreeNode<int>* nodes = new TreeNode<int>[5302];
-	for (i = 0; i < 5102; i++) {
-		nodes[i].setIndex (i);
-	}
-
-	cin >> K >> M >> N;
-
-	//K=0初始化森林
-	if (K == 0) {
-		//M为树根节点的个数
-		int* roots = new int[M];
-		int A, B;
-		for (i = 0; i < M; i++) cin >> roots[i];
-
-		//A节点有B个孩子
-		for (i = 0; i < N; i++) {
-			cin >> A >> B;
-			for (j = 0; j < B; j++) {
-				cin >> node;
-				nodes[A].setChild (&nodes[node]);
-			}
-		}
-
-		for (i = 0; i < M; i++) {
-			tree->addSubTreeByIndex (&nodes[roots[i]], 0);
-		}
-	} else {
-		//初始化二叉树
-		int A, l, r;
-
-		cin >> rootIndex;
-
-		for (i = 0; i < N; i++) {
-			cin >> A >> l >> r;
-			nodes[A].setIndex (A);
-			if (l == -1)
-				nodes[A].setLChild (nullptr);
-			else
-				nodes[A].setLChild (&nodes[l]);
-
-			if (r == -1)
-				nodes[A].setRChild (nullptr);
-			else
-				nodes[A].setRChild (&nodes[r]);
-
-		}
-		tree->addLeftSubTreeByIndex (&nodes[rootIndex], 0);
-		Sleep (500);
-		system ("cls");
-		tree->show (cout);
-	}
-
-	//进行树的操作
-	cin >> Q;
-	int op, father, a, b;
-	for (i = 0; i < Q; i++) {
-		cin >> op;
-		if (op == 1) {
-			cin >> father >> node;
-			if (father == -1) {
-				tree->addSubTreeByIndex (&nodes[node], 0);
-			} else {
-				tree->addSubTreeByIndex (&nodes[node], father);
-			}
-		} else if (op == 2) {
-			cin >> father >> node;
-			tree->deleteTreeNodeByIndex (node);
-		} else if (op == 3) {
-			cin >> a >> b;
-			tree->addEdge (a, b);
-		} else if (op == 4) {
-			if (K == 0) {
-				tree->ConvertToBTree ();
-				K = 1;
-			} else {
-
-				Sleep (1000);
-				system ("cls");
-				tree->ConvertToForest ();
-				tree->show (cout);
-				//Sleep (1000);
-				//system ("cls");
-				//tree->printForest ();
-				K = 0;
-			}
-		} else if (op == 5) {
-			cin >> pos >> father >> node;
-			if (pos == 0)
-				tree->addRightSubTreeByIndex (&nodes[node], father);
-			else
-				tree->addLeftSubTreeByIndex (&nodes[node], father);
-
-
-			//Sleep (1000);
-			//system ("cls");
-			//tree->show (cout);
-		} else {
-			if (K == 0)
-				tree->TreePreorderTraversal ();
-			else
-				tree->BiPreorderTraversal ();
-		}
-		//cout<<tree;
-
-	}
-	return 0;
-}
