@@ -9,6 +9,6 @@
     <Text Include="source.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="externalSort.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
 </Project>
