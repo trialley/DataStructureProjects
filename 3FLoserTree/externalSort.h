@@ -27,39 +27,38 @@ public:
     void split () {
         _clearfile (300);
 
-        int num_per_file = 50;
         cout << ">>>分割文件开始" << endl;
 
         //打开文件
         ifstream in ("source.txt");
         //新建p+1个选手
-        node* players = new node[num_per_file + 1];
+        node* players = new node[_bufferLength + 1];
         //
         _fileNum = 1;
 
         //读取文件，初始化所有选手
         int value;
         int q = 0;
-        while (q < num_per_file && in >> value) {
+        while (q < _bufferLength && in >> value) {
             _countReadDiskOnce ();
             q++;
 
             players[q].value = value;
             players[q].index = 1;
-            cout << players[q].value << endl;
+            cout <<"排序输者树："<< players[q].value << endl;
         }
         q++;
-        if (num_per_file > q)
-            num_per_file = q;
+        if (_bufferLength > q)
+            _bufferLength = q;
 
 
         //使用这些选手初始化输者树
         LoserTree<node> _spliter;
-        _spliter.initTree (players, num_per_file);
+        _spliter.initTree (players, _bufferLength);
 
         //分割文件
         cout << "开始分割文件：" << endl;
-        _totalSize = num_per_file;
+        _totalSize = _bufferLength;
         int temp_in_num;
         //将剩余数据添加到各小文件中
         while (in >> temp_in_num) {
@@ -85,8 +84,8 @@ public:
 
             char temp_file_name[50];
             sprintf (temp_file_name, "temp/%d.txt", players[_spliter.winner ()].index);
-            cout << players[_spliter.winner ()].value << "添加到文件 ";
-            cout << temp_file_name << endl;
+
+            cout << players[_spliter.winner ()].value << "添加到文件 " << temp_file_name << endl;
 
             ofstream out;
             out.open (temp_file_name, ios::app);//追加模式写
@@ -102,18 +101,17 @@ public:
         }
 
         //将所有数据清空
-        for (int i = 0; i < num_per_file; i++) {
+        for (int i = 0; i < _bufferLength; i++) {
             _countReadDiskOnce ();
 
             char temp_file_name[50];
             sprintf (temp_file_name, "temp/%d.txt", players[_spliter.winner ()].index);
 
-            cout << players[_spliter.winner ()].value << " ";
-            cout << temp_file_name << endl;
+            cout << players[_spliter.winner ()].value << "添加剩余数据到文件"<< temp_file_name << endl;
 
             ofstream out_file_stream;
             out_file_stream.open (temp_file_name, ios::app);//追加模式写
-            out_file_stream << players[_spliter.winner ()].value << "剩余数据写入到 ";
+            out_file_stream << players[_spliter.winner ()].value << " ";
             out_file_stream.close ();
 
             //替换元素
@@ -132,8 +130,7 @@ public:
     void merges ();
     void visitstime () { cout << "访问磁盘次数: " << _readDiskCount << endl; }
 private:
-    LoserTree<int> _final_sorter;//用于文件归并排序
-    //int num_per_file;//初始化顺串时最小竞赛树的规模,初始顺串的平均长度为2p
+    //int _bufferLength;//初始化顺串时最小竞赛树的规模,初始顺串的平均长度为2p
     int _fileNum;//输入顺串数
     int _totalSize;//待排序元素总数
     int _readDiskCount;//访问磁盘次数
@@ -165,6 +162,7 @@ int externalsort::_bufferUsed = 0;
 
 
 void externalsort::merges () {
+    LoserTree<int> _final_sorter;//用于文件归并排序
     cout << "开始合并：" << endl;
     cout << "分割文件个数: " << _fileNum << endl;
     cout << "总数据量: " << _totalSize << endl;

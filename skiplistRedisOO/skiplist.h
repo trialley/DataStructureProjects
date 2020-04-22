@@ -287,7 +287,6 @@ public:
         return x;
     }
 
-
     /*通过排名范围删除数据*/
     unsigned long deleteRangeByRank (unsigned long long start, unsigned long long end) {
         skiplistNode<K, E>* update[_SKIPLIST_MAXLEVEL], * x;

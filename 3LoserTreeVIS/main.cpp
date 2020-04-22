@@ -14,8 +14,6 @@ int main () {
     tree.initTree (tobesort, 10);
 
 
-
-
     tree.output (cout);
    
 }
