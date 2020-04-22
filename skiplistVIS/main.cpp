@@ -24,54 +24,95 @@ Stopwatch::~Stopwatch () {
     cout << "此操作所用时间:" << total << "ms\n";
 }
 struct t {
-    long long f;
-    string d;
+    int f;
+    int d;
 };
 
 int main () {
 #pragma warning(disable:4996)
+    cout << "\nmap:\n";
+    map<int, int> m;
+    {
+        Stopwatch watch;
+        srand (1);
+        for (int i = 0; i < 100000; i++) {
+            m[rand () % 100000] = i;
+        }
+    }
+    map<int, int> n;
+    {
+        srand (1);
+        Stopwatch watch;
+        for (int i = 0; i < 100000; i++) {
+            n[rand () % 100000] = i;
+        }
+    }
+    cout << "map删除统计:\n";
+    {
+        srand (1);
+        Stopwatch watch;
+        for (int i = 0; i < 500; i++) {
+            n.erase(rand () % 100000);
+        }
+    }
+    cout << "map插入统计:\n";
+    {
+        srand (1);
+        Stopwatch watch;
+        for (int i = 0; i < 500; i++) {
+            n [rand () % 100000]=i;
+        }
+    }
+    cout << "\nskiplist:\n";
 
-    map<long long, string> m;
+    skiplist<int, int> z;
     {
+        srand (1);
         Stopwatch watch;
-        for (long long i = 0; i < 100000; i++) {
-            m[rand () % 100000] = "h";
+        for (int i = 0; i < 100000; i++) {
+            z.insert (rand () % 100000, i);
         }
     }
-    map<long long, string> n;
+    skiplist<int, int> x;
     {
+        srand (1);
         Stopwatch watch;
-        for (long long i = 0; i < 100000; i++) {
-            n[rand () % 100000] = "h";
+        for (int i = 0; i < 100000; i++) {
+            x.insert (rand () % 100000, i);
         }
     }
-    skiplist<long long, string> z;
+    cout << "skiplist删除统计:\n";
     {
+        srand (1);
         Stopwatch watch;
-        for (long long i = 0; i < 100000; i++) {
-            z.insert (rand () % 100000, "h");
+        for (int i = 0; i < 500; i++) {
+            x.deleteByScore (rand () % 100000);
         }
     }
-    skiplist<long long, string> x;
+    cout << "skiplist插入统计:\n";
     {
+        srand (1);
         Stopwatch watch;
-        for (long long i = 0; i < 100000; i++) {
-            x.insert (rand () % 100000, "h");
+        for (int i = 0; i < 500; i++) {
+            x.insert (rand () % 100000,i);
         }
     }
+    cout << "\nvector关键词不排序:\n";
 
     vector<t> v;
     {
+        srand (1);
         Stopwatch watch;
-        for (long long i = 0; i < 100000; i++) {
-            v.push_back ({ rand () % 100000, "h" });
+        for (int i = 0; i < 100000; i++) {
+            v.push_back ({ rand () % 100000, i });
         }
     }
     vector<t> v1;
     {
+        srand (1);
         Stopwatch watch;
-        for (long long i = 0; i < 100000; i++) {
-            v1.push_back ({ rand () % 100000, "h" });
+        for (int i = 0; i < 100000; i++) {
+            v1.push_back ({ rand () % 100000, i });
         }
     }
 }
