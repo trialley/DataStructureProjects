@@ -291,6 +291,7 @@ public:
 template <typename T>
 class Tree {
 public:
+
 	enum state { FOREST, BTREE };
 	Tree (int size, int index, T data) : _root (new TreeNode<T> (index, data)), _size (1), _maxSize (size) {}
 	Tree (int size) : _root (new TreeNode<T> (0, 0)), _size (1), _maxSize (size) {}
@@ -529,9 +530,6 @@ public:
 		if (_state == FOREST) {
 			//showForest (out);
 			printForest ();
-
-
-
 		} else if(_state == BTREE) {
 			//showBtree (out);
 			printBTree ();
@@ -592,7 +590,7 @@ public:
 		int deepth = 0;
 		printBTreein (_root, row, deepth);
 
-		for (int i = 0; i < 50; i++) {
+		for (int i = 0; i < 30; i++) {
 			cout << charmap[i] << endl;
 		}
 	}
@@ -614,10 +612,6 @@ public:
 			charmap[bot][deepthin * 3 + 1] = '-';
 			charmap[bot][deepthin * 3 + 2] = '-';
 		}
-
-									
-
-
 
 		for (int i = top + 1; i < bot; i++) {
 			charmap[i][deepthin*3] = '|';
@@ -643,7 +637,6 @@ protected:
 	int _size;			 //当前树的节点数(不包括根节点)
 	int _maxSize;		 //树的最大节点数(不包括根节点)
 };
-
 
 #include <stdio.h>
 #include <windows.h>
@@ -683,8 +676,7 @@ int main () {
 		for (i = 0; i < M; i++) {
 			tree->addSubTreeByIndex (&nodes[roots[i]], 0);
 		}
-	} else {
-		//初始化二叉树
+	} else {//初始化二叉树
 		int A, l, r;
 
 		cin >> rootIndex;
@@ -711,9 +703,31 @@ int main () {
 	freopen ("CON", "r", stdin);
 
 	//进行树的操作
-	cin >> Q;
+	//cin >> Q;
 	int op, father, a, b;
-	for (i = 0; i < Q; i++) {
+	//for (i = 0; i < Q; i++) {
+	while(1){
+		system ("cls");
+				cout<< R"( ______                  _     ____ _______            
+|  ____|                | |   |  _ \__   __|           
+| |__ ___  _ __ ___  ___| |_  | |_) | | |_ __ ___  ___ 
+|  __/ _ \| '__/ _ \/ __| __| |  _ <  | | '__/ _ \/ _ \
+| | | (_) | | |  __/\__ \ |_  | |_) | | | | |  __/  __/
+|_|  \___/|_|  \___||___/\__| |____/  |_|_|  \___|\___|
+*请输入指令：
+*  1 father node 添加节点
+*  2 father node 删除节点
+*  3 a b 添加边
+*  4 树与森林转换
+*  5 pos(0右1左) father node 二叉树添加子节点
+)";
+		if (tree->getState () == Tree<int>::BTREE) {
+			cout << "现在是二叉树模式\n";
+		}else {
+			cout << "现在是森林模式\n";
+		}
+		tree->show (cout);
+		cout << endl;
 		cin >> op;
 		if (op == 1) {
 			cin >> father >> node;
@@ -733,14 +747,7 @@ int main () {
 				tree->ConvertToBTree ();
 				K = 1;
 			} else {
-
-				Sleep (1000);
-				system ("cls");
 				tree->ConvertToForest ();
-				tree->show (cout);
-				//Sleep (1000);
-				//system ("cls");
-				//tree->printForest ();
 				K = 0;
 			}
 		} else if (op == 5) {
@@ -749,19 +756,12 @@ int main () {
 				tree->addRightSubTreeByIndex (&nodes[node], father);
 			else
 				tree->addLeftSubTreeByIndex (&nodes[node], father);
-
-
-			//Sleep (1000);
-			//system ("cls");
-			//tree->show (cout);
 		} else {
 			if (K == 0)
 				tree->TreePreorderTraversal ();
 			else
 				tree->BiPreorderTraversal ();
 		}
-		//cout<<tree;
-
 	}
 	return 0;
 }
