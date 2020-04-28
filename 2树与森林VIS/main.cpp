@@ -651,7 +651,7 @@ protected:
 
 #pragma warning(disable : 4996)
 int main () {
-	freopen ("in2.txt", "r", stdin);
+	FILE* fd  = freopen ("in2.txt", "r", stdin);
 
 	int i, j, K, M, N, Q, node, rootIndex, pos;
 	Tree<int>* tree = new Tree<int> (5302, 0, 0);
@@ -708,6 +708,7 @@ int main () {
 		system ("cls");
 		tree->show (cout);
 	}
+	freopen ("CON", "r", stdin);
 
 	//进行树的操作
 	cin >> Q;
