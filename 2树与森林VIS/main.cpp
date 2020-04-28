@@ -590,7 +590,7 @@ public:
 		int deepth = 0;
 		printBTreein (_root, row, deepth);
 
-		for (int i = 0; i < 30; i++) {
+		for (int i = 0; i < 15; i++) {
 			cout << charmap[i] << endl;
 		}
 	}
@@ -600,14 +600,14 @@ public:
 		}
 		int top= printBTreein(rootin->_leftChild,row, deepthin+1);
 
-		int me = row++;
+		int me = row;
 		if (top != me-1) {
 			charmap[top][deepthin * 3] = '/';
 			charmap[top][deepthin * 3 + 1] = '-';
 			charmap[top][deepthin * 3 + 2] = '-';
 		}
 		int bot= printBTreein (rootin->_rightChild, row, deepthin+1);
-		if (bot != me+1) {
+		if (bot != me) {
 			charmap[bot][deepthin * 3] = '\\';
 			charmap[bot][deepthin * 3 + 1] = '-';
 			charmap[bot][deepthin * 3 + 2] = '-';
@@ -714,19 +714,19 @@ int main () {
 |  __/ _ \| '__/ _ \/ __| __| |  _ <  | | '__/ _ \/ _ \
 | | | (_) | | |  __/\__ \ |_  | |_) | | | | |  __/  __/
 |_|  \___/|_|  \___||___/\__| |____/  |_|_|  \___|\___|
-*请输入指令：
+)";
+		tree->show (cout);
+		if (tree->getState () == Tree<int>::BTREE) {
+			cout << "*现在是二叉树模式\n";
+		}else {
+			cout << "*现在是森林模式\n";
+		}
+		cout << R"(*请输入指令：
 *  1 father node 添加节点
 *  2 father node 删除节点
 *  3 a b 添加边
 *  4 树与森林转换
-*  5 pos(0右1左) father node 二叉树添加子节点
-)";
-		if (tree->getState () == Tree<int>::BTREE) {
-			cout << "现在是二叉树模式\n";
-		}else {
-			cout << "现在是森林模式\n";
-		}
-		tree->show (cout);
+*  5 pos(0右1左) father node 二叉树添加子节点)";
 		cout << endl;
 		cin >> op;
 		if (op == 1) {
