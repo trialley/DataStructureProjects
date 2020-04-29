@@ -22,7 +22,8 @@ struct node {
 
 class externalsort {
 public:
-    externalsort (int buf_size) :_bufferLength(buf_size){}
+    string _filepath;
+    externalsort (int buf_size,string filepath) :_bufferLength(buf_size),_filepath(filepath){}
     ~externalsort () {}
     void split () {
         _clearfile (300);
@@ -30,7 +31,11 @@ public:
         cout << ">>>分割文件开始" << endl;
 
         //打开文件
-        ifstream in ("source.txt");
+        ifstream in (_filepath);
+        if (in.fail ()) {
+            cout << "no such file!";
+            exit (0);
+        }
         //新建p+1个选手
         node* players = new node[_bufferLength + 1];
         //

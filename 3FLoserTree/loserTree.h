@@ -62,6 +62,8 @@ public:
         //将最终的赢者记录在tree[0]
         tree[0] = temp[1];
     }
+
+    //更新结构，thePlayer指向的元素已经被替换
     void replay (int thePlayer) {
         int n = _numOfPlayer;
         if (thePlayer <= 0 || thePlayer > n) {
@@ -73,8 +75,8 @@ public:
         int matchPoint;     //左右选手的父亲节点
         int left, right;     //左右选手
 
-        if (thePlayer <= lowExt) {       //the _players is on the bottom 
-            matchPoint = (thePlayer + offset) / 2;
+        if (thePlayer <= lowExt) {       //如果变化的节点在最底层
+            matchPoint = (thePlayer + offset) / 2;//获取父节点
             left = 2 * matchPoint - offset;    // unify to the left _players
             right = left + 1;
         } else {   //the _players is on the last but one
@@ -91,7 +93,7 @@ public:
 
         //重新比赛
         //重新比赛的选手在之前胜者的位置
-        if (thePlayer == tree[0]) {//the _players to replay is the previous winner!!!,ok,that's simple
+        if (thePlayer == tree[0]) {
             for (; matchPoint >= 1; matchPoint /= 2) {   //上次比赛的输者已经记录在tree[]中 
                 int loserTemp = _whoLose (tree[matchPoint], thePlayer);
                 temp[matchPoint] = _whoWin (tree[matchPoint], thePlayer);
@@ -136,8 +138,5 @@ private:
 
     int _whoWin (int x, int y) { return _players[x] <= _players[y] ? x : y; }    //返回赢者
     int _whoLose (int x, int y) { return _players[x] <= _players[y] ? y : x; }      //返回输者
-    //void _play (int gamepoint, int leftPlayer, int rightPlayer);     //比赛,if left<=right left win,else left lose
-
-
 };
 

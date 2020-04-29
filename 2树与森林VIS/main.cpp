@@ -4,30 +4,30 @@
 using namespace std;
 
 template <typename T>
-class TreeNode {
+class Node {
 public:
 
-	TreeNode () : _index (0), _parent (0), _leftChild (0), _rightChild (0), _firstChild (0), _nextSibling (0), _data (0) {}
-	TreeNode (int index, T data) : _index (index), _data (data), _parent (0), _leftChild (0), _rightChild (0), _firstChild (0), _nextSibling (0) {}
-	~TreeNode () {
-		if (_leftChild != nullptr) {
-			_leftChild->BTreeDeleteAll ();
-			_leftChild = nullptr;
+	Node () : _index (0), _parent (0), _left (0), _right (0), _firstChild (0), _sibling (0), _data (0) {}
+	Node (int index, T data) : _index (index), _data (data), _parent (0), _left (0), _right (0), _firstChild (0), _sibling (0) {}
+	~Node () {
+		if (_left != nullptr) {
+			_left->BTreeDeleteAll ();
+			_left = nullptr;
 		}
 
-		if (_rightChild != nullptr) {
-			_rightChild->BTreeDeleteAll ();
-			_rightChild = nullptr;
+		if (_right != nullptr) {
+			_right->BTreeDeleteAll ();
+			_right = nullptr;
 		}
 
 		if (_firstChild != nullptr) {
-			_firstChild->TreeNodeDelete ();
+			_firstChild->NodeDelete ();
 			_firstChild = nullptr;
 		}
 
-		if (_nextSibling != nullptr) {
-			_nextSibling->TreeNodeDelete ();
-			_nextSibling = nullptr;
+		if (_sibling != nullptr) {
+			_sibling->NodeDelete ();
+			_sibling = nullptr;
 		}
 		_parent = nullptr;
 	}
@@ -35,68 +35,67 @@ public:
 	//get data
 	int getIndex () { return _index; }
 	T getData () { return _data; }
-	TreeNode<T>* getParent () { return _parent; }
-	TreeNode<T>* getLChild () { return _leftChild; }
-	TreeNode<T>* getRChild () { return _rightChild; }
-	TreeNode<T>* getFirstChild () { return _firstChild; }
-	TreeNode<T>* getNextSibling () { return _nextSibling; }
+	Node<T>* getParent () { return _parent; }
+	Node<T>* getLChild () { return _left; }
+	Node<T>* getRChild () { return _right; }
+	Node<T>* getFirstChild () { return _firstChild; }
+	Node<T>* getNextSibling () { return _sibling; }
 
 	void setIndex (int index) { _index = index; }
 	void setData (T data) { _data = data; }
-	void setParenet (TreeNode* Node) { _parent = Node; }
-	void setLChild (TreeNode* Node) {
-		_leftChild = Node;
+	void setParenet (Node* Node) { _parent = Node; }
+	void setLChild (Node* Node) {
+		_left = Node;
 		if (Node != nullptr) Node->setParenet (this);
 	}
-	void setRChild (TreeNode* Node) {
-		_rightChild = Node;
+	void setRChild (Node* Node) {
+		_right = Node;
 		if (Node != nullptr) Node->setParenet (this);
 	}
-	void setFirstChild (TreeNode* Node) { _firstChild = Node; }
-	void setNextSibling (TreeNode* Node) { _nextSibling = Node; }
-	void setChild (TreeNode* Node) {	 //无孩子的情况
+	void setFirstChild (Node* Node) { _firstChild = Node; }
+	void setNextSibling (Node* Node) { _sibling = Node; }
+	void setChild (Node* nodein) {	 //无孩子的情况
 		if (_firstChild == nullptr) {
-			_firstChild = Node;
-			Node->setParenet (this);
+			_firstChild = nodein;
+			nodein->setParenet (this);
 		}
 		//第一个孩子的索引值大于Node的索引值的情况
-		else if (Node->getIndex () < _firstChild->getIndex ()) {
-			Node->setParenet (this);
-			Node->setNextSibling (_firstChild);
-			_firstChild = Node;
+		else if (nodein->getIndex () < _firstChild->getIndex ()) {
+			nodein->setParenet (this);
+			nodein->setNextSibling (_firstChild);
+			_firstChild = nodein;
 		} else {
 			//找到所有的孩子中索引值不小于Node的最大节点
-			TreeNode<T>* pTempNode = _firstChild;
+			Node<T>* pTempNode = _firstChild;
 			while (pTempNode->getNextSibling () != nullptr &&
-				pTempNode->getNextSibling ()->getIndex () < Node->getIndex ())
+				pTempNode->getNextSibling ()->getIndex () < nodein->getIndex ())
 				pTempNode = pTempNode->getNextSibling ();
 			//该节点无下一个兄弟节点
 			if (pTempNode->getNextSibling () == nullptr) {
-				pTempNode->setNextSibling (Node);
-				Node->setParenet (this);
+				pTempNode->setNextSibling (nodein);
+				nodein->setParenet (this);
 			} else {  //该节点在两个节点之间
-				Node->setParenet (this);
-				Node->setNextSibling (pTempNode->getNextSibling ());
-				pTempNode->setNextSibling (Node);
+				nodein->setParenet (this);
+				nodein->setNextSibling (pTempNode->getNextSibling ());
+				pTempNode->setNextSibling (nodein);
 			}
 		}
 	}
 
-	/*-----------------------others------------------------*/
-	TreeNode<T>* BiNodeSearch (int index) {
-		TreeNode<T>* tempNode = nullptr;
+	Node<T>* BNodeSearch (int index) {
+		Node<T>* tempNode = nullptr;
 		if (_index == index) {
 			return this;
 		}
-		if (_leftChild != nullptr) {
-			tempNode = _leftChild->BiNodeSearch (index);
+		if (_left != nullptr) {
+			tempNode = _left->BNodeSearch (index);
 			if (tempNode != nullptr) {
 				return tempNode;
 			}
 		}
 
-		if (_rightChild != nullptr) {
-			tempNode = _rightChild->BiNodeSearch (index);
+		if (_right != nullptr) {
+			tempNode = _right->BNodeSearch (index);
 			if (tempNode != nullptr) {
 				return tempNode;
 			}
@@ -104,21 +103,21 @@ public:
 		return nullptr;
 	}
 
-	TreeNode<T>* TreeNodeSearch (int index) {
-		TreeNode<T>* tempNode = nullptr;
+	Node<T>* NodeSearch (int index) {
+		Node<T>* tempNode = nullptr;
 
 		if (_index == index) {
 			return this;
 		}
 		if (_firstChild != nullptr) {
-			tempNode = _firstChild->TreeNodeSearch (index);
+			tempNode = _firstChild->NodeSearch (index);
 			if (tempNode != nullptr) {
 				return tempNode;
 			}
 		}
 
-		if (_nextSibling != nullptr) {
-			tempNode = _nextSibling->TreeNodeSearch (index);
+		if (_sibling != nullptr) {
+			tempNode = _sibling->NodeSearch (index);
 			if (tempNode != nullptr) {
 				return tempNode;
 			}
@@ -130,11 +129,11 @@ public:
 	/*查询子树的叶子数*/
 
 	int NodeLeavesCount (int leaves) {
-		if (this->_leftChild != nullptr)
-			leaves = this->_leftChild->NodeLeavesCount (leaves);
+		if (this->_left != nullptr)
+			leaves = this->_left->NodeLeavesCount (leaves);
 
-		if (this->_rightChild != nullptr)
-			leaves = this->_rightChild->NodeLeavesCount (leaves);
+		if (this->_right != nullptr)
+			leaves = this->_right->NodeLeavesCount (leaves);
 
 		if (this->getLChild () == nullptr && this->getRChild () == nullptr)
 			leaves++;
@@ -147,11 +146,11 @@ public:
 	int BiNodeChildrenCount () {
 		int biCnt = 0;
 
-		if (this->_leftChild != nullptr)
-			biCnt += this->_leftChild->BiNodeChildrenCount ();
+		if (this->_left != nullptr)
+			biCnt += this->_left->BiNodeChildrenCount ();
 
-		if (this->_rightChild != nullptr)
-			biCnt += this->_rightChild->BiNodeChildrenCount ();
+		if (this->_right != nullptr)
+			biCnt += this->_right->BiNodeChildrenCount ();
 
 		biCnt++;
 		return biCnt;
@@ -159,14 +158,14 @@ public:
 
 	/*查询子树的节点数(包括自己)*/
 
-	int TreeNodeChildrenCount () {
+	int NodeChildrenCount () {
 		int tiCnt = 0;
 
 		if (this->_firstChild != nullptr)
-			tiCnt += this->_firstChild->TreeNodeChildrenCount ();
+			tiCnt += this->_firstChild->NodeChildrenCount ();
 
-		if (this->_nextSibling != nullptr)
-			tiCnt += this->_nextSibling->TreeNodeChildrenCount ();
+		if (this->_sibling != nullptr)
+			tiCnt += this->_sibling->NodeChildrenCount ();
 
 		tiCnt++;
 		return tiCnt;
@@ -176,14 +175,14 @@ public:
 
 	int BTreeDeleteAll () {
 		int Times = 0;
-		if (this->_leftChild != nullptr) {
-			Times += this->_leftChild->BTreeDeleteAll ();
-			this->_leftChild = nullptr;
+		if (this->_left != nullptr) {
+			Times += this->_left->BTreeDeleteAll ();
+			this->_left = nullptr;
 		}
 
-		if (this->_rightChild != nullptr) {
-			Times += this->_rightChild->BTreeDeleteAll ();
-			this->_rightChild = nullptr;
+		if (this->_right != nullptr) {
+			Times += this->_right->BTreeDeleteAll ();
+			this->_right = nullptr;
 		}
 
 		Times++;
@@ -193,16 +192,16 @@ public:
 
 	/*删除子树的所有节点*/
 
-	int TreeNodeDelete () {
+	int NodeDelete () {
 		int Times = 0;
 		if (this->_firstChild != nullptr) {
-			Times += this->_firstChild->TreeNodeDelete ();
+			Times += this->_firstChild->NodeDelete ();
 			this->_firstChild = nullptr;
 		}
 
-		if (this->_nextSibling != nullptr) {
-			Times += this->_nextSibling->TreeNodeDelete ();
-			this->_nextSibling = nullptr;
+		if (this->_sibling != nullptr) {
+			Times += this->_sibling->NodeDelete ();
+			this->_sibling = nullptr;
 		}
 
 		Times++;
@@ -225,67 +224,68 @@ public:
 		return res;
 	}
 
-	int TreeNodePreorderTraversal () {
+	int NodePreorderTraversal () {
 		//cout<<"Index:"<<this->getIndex()<<";Data:"<<this->getData()<<endl;
 
 		int res = this->getIndex ();
 		if (this->getFirstChild () != nullptr)
-			res ^= this->getFirstChild ()->TreeNodePreorderTraversal ();
+			res ^= this->getFirstChild ()->NodePreorderTraversal ();
 
 		if (this->getNextSibling () != nullptr)
-			res ^= this->getNextSibling ()->TreeNodePreorderTraversal ();
+			res ^= this->getNextSibling ()->NodePreorderTraversal ();
 
 		return res;
 	}
+	///////////////////////////////////////////////////////////////////
+	//二叉树转化为森林
+	//二叉树节点的左子节点的右节点链条转化为子节点链表
+	void _convertToForest () {
+		Node<T>* pLeftNode = this->getLChild ();
+		if (pLeftNode == nullptr)return;
 
-	//加入0号根节点后，处理二叉树应该有一定的规律
-	void ConvertToForest () {
-		TreeNode<T>* pLeftNode = this->getLChild ();
-
-		//this节点的右孩子节点或者没有或者已经处理过了，若无左孩子节点，返回即可
-		if (pLeftNode == nullptr)
-			return;
-
-		//处理左孩子，左孩子的右孩子节点，以及左孩子的右孩子的右孩子节点等
-		TreeNode<T>* pPNode = pLeftNode;
-		TreeNode<T>* pRNode;
+		Node<T>* pPNode = pLeftNode;
+		Node<T>* pRNode;
 		while (pPNode != nullptr) {
 			pRNode = pPNode->getRChild ();
-			pPNode->setRChild (nullptr);
+			pPNode->setRChild (nullptr);//第一次是左子节点转化为第一个子节点
 
 			this->setChild (pPNode);
-			pPNode->ConvertToForest ();
+			pPNode->_convertToForest ();
 
 			pPNode = pRNode;
 		}
 	}
 
-	//应该也是递归
-	void ConvertToBTree () {
-		TreeNode<T>* pFirstChild = this->getFirstChild ();
-		TreeNode<T>* pNextSibling = this->getNextSibling ();
+	//森林转化为二叉树
+	//第一个子节点是左子节点，兄弟节点是右节点链条
+	void _convertToBTree () {
+		Node<T>* pFirstChild = this->getFirstChild ();
+		Node<T>* pNextSibling = this->getNextSibling ();
 
-		//长子为左孩子，下一个兄弟为右孩子
 		this->setLChild (pFirstChild);
 		this->setRChild (pNextSibling);
 		this->setFirstChild (nullptr);
 		this->setNextSibling (nullptr);
 
-		if (pFirstChild != nullptr) pFirstChild->ConvertToBTree ();
-
-		if (pNextSibling != nullptr) pNextSibling->ConvertToBTree ();
+		if (pFirstChild != nullptr) pFirstChild->_convertToBTree ();
+		if (pNextSibling != nullptr) pNextSibling->_convertToBTree ();
 	}
+	///////////////////////////////////////////////////////////////////
 
 
 //private:
 	int _index;	 //索引
 	T _data;	 //值
 
-	TreeNode* _parent;		 //父亲节点
-	TreeNode* _leftChild;	 //左孩子节点
-	TreeNode* _rightChild;	 //右孩子节点
-	TreeNode* _firstChild;	 //长子节点
-	TreeNode* _nextSibling;	 //兄弟节点
+	Node* _parent;		 //父亲节点
+	
+	//二叉树
+	Node* _left;	 //左子节点
+	Node* _right;	 //右子节点
+
+	//森林
+	Node* _firstChild;	 //子节点链表头部
+	Node* _sibling;	 //兄弟节点
 };
 
 template <typename T>
@@ -293,8 +293,8 @@ class Tree {
 public:
 
 	enum state { FOREST, BTREE };
-	Tree (int size, int index, T data) : _root (new TreeNode<T> (index, data)), _size (1), _maxSize (size) {}
-	Tree (int size) : _root (new TreeNode<T> (0, 0)), _size (1), _maxSize (size) {}
+	Tree (int size, int index, T data) : _root (new Node<T> (index, data)), _size (1), _maxSize (size) {}
+	Tree (int size) : _root (new Node<T> (0, 0)), _size (1), _maxSize (size) {}
 	~Tree () {
 		if (_root != nullptr) delete _root;
 		_root = nullptr;
@@ -303,9 +303,11 @@ public:
 	bool IsTreeEmpty ();	 //树是否为空
 	bool IsTreeFull ();	 //树的容量是否已满
 
-	//search
-	TreeNode<T>* getBiNodeByIndex (int index);  //通过索引搜索节点
-	TreeNode<T>* getTreeNodeByIndex (int index);
+	//搜索
+	Node<T>* getBiNodeByIndex (int index);  //通过索引搜索节点
+	Node<T>* getNodeByIndex (int index);
+	
+	//基本信息
 	int getLeaves ();	 //获取树的叶子数
 	int getHeight ();	 //获取树的高度(包含根节点)
 	int getWidth ();		 //获取树的宽度(包含根节点)
@@ -313,34 +315,34 @@ public:
 	int getNowTreeSize ();
 	int getMaxSize ();  //获取树的最大节点数
 
-	bool addLeftSubTreeByIndex (TreeNode<T>* pNode, int searchIndex) {
+	bool addLeftSubTreeByIndex (Node<T>* pNode, int searchIndex) {
 		if (_root == nullptr) return false;
 		_state = BTREE;
-		TreeNode<T>* tempNode;
-		tempNode = _root->BiNodeSearch (searchIndex);  //通过索引找到该节点
+		Node<T>* tempNode;
+		tempNode = _root->BNodeSearch (searchIndex);  //通过索引找到该节点
 
 		tempNode->setLChild (pNode);
 		_size += pNode->BiNodeChildrenCount ();
 		return true;
 	}
 
-	bool addRightSubTreeByIndex (TreeNode<T>* pNode, int searchIndex) {
+	bool addRightSubTreeByIndex (Node<T>* pNode, int searchIndex) {
 		if (_root == nullptr) return false;
-		TreeNode<T>* tempNode;
-		tempNode = _root->BiNodeSearch (searchIndex);  //通过索引找到该节点
+		Node<T>* tempNode;
+		tempNode = _root->BNodeSearch (searchIndex);  //通过索引找到该节点
 
 		tempNode->setRChild (pNode);
 
 		return true;
 	}
 
-	bool addSubTreeByIndex (TreeNode<T>* pNode, int searchIndex) {
+	bool addSubTreeByIndex (Node<T>* pNode, int searchIndex) {
 		if (_root == nullptr)
 			return false;
 		_state = FOREST;
 
-		TreeNode<T>* tempNode;
-		tempNode = _root->TreeNodeSearch (searchIndex);	//通过索引找到该节点
+		Node<T>* tempNode;
+		tempNode = _root->NodeSearch (searchIndex);	//通过索引找到该节点
 		tempNode->setChild (pNode);
 		return true;
 	}
@@ -349,8 +351,8 @@ public:
 		if (_root == nullptr)
 			return false;
 
-		TreeNode<T>* tempNode;
-		tempNode = _root->TreeNodeSearch (searchIndex);	//通过索引找到该节点
+		Node<T>* tempNode;
+		tempNode = _root->NodeSearch (searchIndex);	//通过索引找到该节点
 
 		if (tempNode != nullptr) {
 			//cout << tempNode->getIndex() << endl;
@@ -360,13 +362,13 @@ public:
 		return false;
 	}
 
-	bool addChildNodeByNode (int index, T data, TreeNode<T>* pNode) {
-		TreeNode<T>* pNodeCopy = pNode;	 //做pNode的副本，防止pNode的被意外修改
+	bool addChildNodeByNode (int index, T data, Node<T>* pNode) {
+		Node<T>* pNodeCopy = pNode;	 //做pNode的副本，防止pNode的被意外修改
 
 		if (IsTreeFull ()) return false;
 		//得到长子节点
-		TreeNode<T>* pFirstChildNode = pNodeCopy->getFirstChild ();
-		TreeNode<T>* newNode = new TreeNode<T> (index, data);
+		Node<T>* pFirstChildNode = pNodeCopy->getFirstChild ();
+		Node<T>* newNode = new Node<T> (index, data);
 		if (pFirstChildNode == nullptr) {
 			pNodeCopy->setFirstChild (newNode);
 			newNode->setParenet (pNodeCopy);
@@ -376,7 +378,7 @@ public:
 			newNode->setNextSibling (pFirstChildNode);
 		} else {
 			//找到索引值不小于index的最大节点
-			TreeNode<T>* pTempNode = pFirstChildNode;
+			Node<T>* pTempNode = pFirstChildNode;
 			while (pTempNode->getNextSibling () != nullptr &&
 				pTempNode->getNextSibling ()->getIndex () < index)
 				pTempNode = pTempNode->getNextSibling ();
@@ -395,10 +397,10 @@ public:
 	}
 
 	void addEdge (int a, int b) {
-		TreeNode<T>* nodeA, * nodeB, * tempNode;
+		Node<T>* nodeA, * nodeB, * tempNode;
 
-		nodeA = _root->TreeNodeSearch (a);
-		nodeB = _root->TreeNodeSearch (b);
+		nodeA = _root->NodeSearch (a);
+		nodeB = _root->NodeSearch (b);
 		if (a < b) {
 			tempNode = nodeA;
 			//找到nodeB的前一个兄弟节点
@@ -412,7 +414,7 @@ public:
 		} else if (a > b) {
 			//b是长子,将b的下一个兄弟节点作为长子
 			if (_root->getFirstChild () == nodeB) {
-				TreeNode<T>* NextSiblingNode = nodeB->getNextSibling ();
+				Node<T>* NextSiblingNode = nodeB->getNextSibling ();
 				_root->setFirstChild (NextSiblingNode);
 				nodeB->setNextSibling (nullptr);
 				nodeA->setChild (nodeB);
@@ -428,42 +430,40 @@ public:
 		}
 	}
 
-	//delete
-
-	bool deleteTreeNodeByIndex (int index) {
-		TreeNode<T>* deleteNode = _root->TreeNodeSearch (index);
+	//森林删除节点
+	bool forestDeleteNodeByIndex (int index) {
+		Node<T>* deleteNode = _root->NodeSearch (index);
 
 		if (deleteNode != nullptr) {
 			if (deleteNode == _root) {
-				cout << "deleteTreeNodeByIndex():" << index << "是根节点不能删除" << endl;
+				cout << "forestDeleteNodeByIndex():" << index << "是根节点不能删除" << endl;
 				return false;
 			}
-			return deleteTreeNodeByNode (deleteNode);
+			return deleteNodeIn (deleteNode);
 		}
 		return false;
 	}
 
-	bool deleteTreeNodeByNode (TreeNode<T>* pNode) {
+	bool deleteNodeIn (Node<T>* pNode) {
 		if (pNode != nullptr) {
-			//先看是否有孩子节点
-			TreeNode<T>* pFirstChildNode = pNode->getFirstChild ();
-
-			//有孩子节点先将孩子节点都作为0号节点的子孩子
-			if (pFirstChildNode != nullptr) {
-				TreeNode<T>* pChildNode = pFirstChildNode;
-				TreeNode<T>* pNextSiblingNode;
-				while (pChildNode != nullptr) {
-					pNextSiblingNode = pChildNode->getNextSibling ();
-					_root->setChild (pChildNode);
-					pChildNode = pNextSiblingNode;
+			//孩子节点
+			Node<T>* first_child = pNode->getFirstChild ();
+			//将孩子节点当做根节点的孩子
+			if (first_child != nullptr) {
+				Node<T>* p = first_child;
+				Node<T>* pp;
+				while (p != nullptr) {
+					pp = p->getNextSibling ();
+					_root->setChild (p);
+					p = pp;
 				}
 			}
 
 			pNode->setFirstChild (nullptr);
 
-			//处理完孩子节点再处理兄弟链表
-			TreeNode<T>* pParentNode = pNode->getParent ();
-			TreeNode<T>* pCNode = pParentNode->getFirstChild ();
+			//兄弟  在父节点的子节点链表中
+			Node<T>* pParentNode = pNode->getParent ();
+			Node<T>* pCNode = pParentNode->getFirstChild ();
 			if (pCNode == pNode) {
 				pParentNode->setFirstChild (pNode->getNextSibling ());
 			} else {
@@ -489,13 +489,13 @@ public:
 	void TreePreorderTraversal () {
 		if (_root == nullptr) return;
 
-		TreeNode<T>* pFirstNode = _root->getFirstChild ();
-		TreeNode<T>* pSiblingNode;
+		Node<T>* pFirstNode = _root->getFirstChild ();
+		Node<T>* pSiblingNode;
 
 		int res = pFirstNode->getIndex ();
 		//cout << res << endl;
 		if (pFirstNode->getFirstChild () != nullptr)
-			res ^= pFirstNode->getFirstChild ()->TreeNodePreorderTraversal ();
+			res ^= pFirstNode->getFirstChild ()->NodePreorderTraversal ();
 
 		pSiblingNode = pFirstNode->getNextSibling ();
 		cout << res << " ";
@@ -503,7 +503,7 @@ public:
 		while (pSiblingNode != nullptr) {
 			res = pSiblingNode->getIndex ();
 			if (pSiblingNode->getFirstChild () != nullptr)
-				res ^= pSiblingNode->getFirstChild ()->TreeNodePreorderTraversal ();
+				res ^= pSiblingNode->getFirstChild ()->NodePreorderTraversal ();
 			if (pSiblingNode->getNextSibling () != nullptr) {
 				cout << res << " ";
 			} else {
@@ -514,14 +514,13 @@ public:
 		cout << endl;
 	}
 
-	void ConvertToForest () { 
+	void toForest () { 
 		_state = FOREST;
-		_root->ConvertToForest ();
+		_root->_convertToForest ();
 	}
-	void ConvertToBTree () { 
+	void toBTree () { 
 		_state = BTREE;
-		
-		_root->ConvertToBTree ();
+		_root->_convertToBTree ();
 	}
 	enum state getState () { return _state; }
 
@@ -547,12 +546,12 @@ public:
 		}
 		showTree (_root, 0);
 	}
-	void printForestin (TreeNode<T>* rootin, int& row, int deepthin) {
+	void printForestin (Node<T>* rootin, int& row, int deepthin) {
 		
 
 	}
 	bool treedown[10];
-	void showTree (TreeNode<T>* rootin,int deepth) {
+	void showTree (Node<T>* rootin,int deepth) {
 
 		for (int i = 1; i <= deepth; i++) {
 			if (treedown[i] == true) {
@@ -594,11 +593,11 @@ public:
 			cout << charmap[i] << endl;
 		}
 	}
-	int printBTreein (TreeNode<T>* rootin,int& row, int deepthin) {
+	int printBTreein (Node<T>* rootin,int& row, int deepthin) {
 		if (rootin == nullptr) {
 			return row++;
 		}
-		int top= printBTreein(rootin->_leftChild,row, deepthin+1);
+		int top= printBTreein(rootin->_left,row, deepthin+1);
 
 		int me = row;
 		if (top != me-1) {
@@ -606,7 +605,7 @@ public:
 			charmap[top][deepthin * 3 + 1] = '-';
 			charmap[top][deepthin * 3 + 2] = '-';
 		}
-		int bot= printBTreein (rootin->_rightChild, row, deepthin+1);
+		int bot= printBTreein (rootin->_right, row, deepthin+1);
 		if (bot != me) {
 			charmap[bot][deepthin * 3] = '\\';
 			charmap[bot][deepthin * 3 + 1] = '-';
@@ -631,9 +630,9 @@ protected:
 
 	char charmap[1000][1000]; //用于存放要打印的横向二叉树 
 
-	//void ConvertToForest () { _root->ConvertToForest (); }
-	//void ConvertToBTree () { _root->ConvertToBTree (); }
-	TreeNode<T>* _root;	 //树根节点
+	//void toForest () { _root->toForest (); }
+	//void toBTree () { _root->toBTree (); }
+	Node<T>* _root;	 //树根节点
 	int _size;			 //当前树的节点数(不包括根节点)
 	int _maxSize;		 //树的最大节点数(不包括根节点)
 };
@@ -650,7 +649,7 @@ int main () {
 	Tree<int>* tree = new Tree<int> (5302, 0, 0);
 
 	//节点初始化
-	TreeNode<int>* nodes = new TreeNode<int>[5302];
+	Node<int>* nodes = new Node<int>[5302];
 	for (i = 0; i < 5102; i++) {
 		nodes[i].setIndex (i);
 	}
@@ -664,7 +663,7 @@ int main () {
 		int A, B;
 		for (i = 0; i < M; i++) cin >> roots[i];
 
-		//A节点有B个孩子
+		//A节点有B个孩子,数组中每个节点都有自己的地址，通过地址进行节点关系的保存
 		for (i = 0; i < N; i++) {
 			cin >> A >> B;
 			for (j = 0; j < B; j++) {
@@ -702,10 +701,8 @@ int main () {
 	}
 	freopen ("CON", "r", stdin);
 
-	//进行树的操作
-	//cin >> Q;
-	int op, father, a, b;
-	//for (i = 0; i < Q; i++) {
+	//显示图形界面，接受用户操作
+	int father, a, b;
 	while(1){
 		system ("cls");
 				cout<< R"( ______                  _     ____ _______            
@@ -728,6 +725,7 @@ int main () {
 *  4 树与森林转换
 *  5 pos(0右1左) father node 二叉树添加子节点)";
 		cout << endl;
+		int op;
 		cin >> op;
 		if (op == 1) {
 			cin >> father >> node;
@@ -738,16 +736,16 @@ int main () {
 			}
 		} else if (op == 2) {
 			cin >> father >> node;
-			tree->deleteTreeNodeByIndex (node);
+			tree->forestDeleteNodeByIndex (node);
 		} else if (op == 3) {
 			cin >> a >> b;
 			tree->addEdge (a, b);
 		} else if (op == 4) {
 			if (K == 0) {
-				tree->ConvertToBTree ();
+				tree->toBTree ();
 				K = 1;
 			} else {
-				tree->ConvertToForest ();
+				tree->toForest ();
 				K = 0;
 			}
 		} else if (op == 5) {

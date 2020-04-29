@@ -5,7 +5,6 @@
 #include<map>
 #pragma warning(disable:4996)
 
-
 #include"Tree.h"
 using namespace std;
 template<class T>
@@ -15,9 +14,12 @@ public:
     LoserTree (T* thePlayers, int n) { initTree (thePlayers, n); }            //创建输者树
     ~LoserTree () { delete[] tree; delete[] temp; } //释放资源
 
+    //败者树初始化
     void initTree (T* thePlayers, int n) {
+        
+        //根据player[l], _players[r]的值，设置tree[p]的值
         auto _play = [this](int p, int left, int right) ->void {
-            //根据player[l],_players[r]的值，设置tree[p]的值，即在左右子节点l，r之间举办比赛
+            //即在左右子节点l，r之间举办比赛
             //之后如果p是右孩子节点，则继续举行上一层的比赛
 
             tree[p] = _whoLose (left, right);
@@ -66,6 +68,8 @@ public:
         //将最终的赢者记录在tree[0]
         tree[0] = temp[1];
     }
+    
+    //重拍 注意，切换元素在外部完成
     void replay (int thePlayer) {
         int n = _numOfPlayer;
         if (thePlayer <= 0 || thePlayer > n) {
@@ -151,7 +155,10 @@ public:
 
 
 
-    int* theTree () { return tree; }                //返回输者树
+    int* theTree () { return tree; }
+    
+    
+    //获取胜者
     int winner () { return temp[1]; }
 
 private:
