@@ -25,6 +25,8 @@ public:
     string _filepath;
     externalsort (int buf_size,string filepath) :_bufferLength(buf_size),_filepath(filepath){}
     ~externalsort () {}
+
+    //进行文件分割
     void split () {
         _clearfile (300);
 
@@ -36,10 +38,11 @@ public:
             cout << "no such file!";
             exit (0);
         }
+
+
         //新建p+1个选手
         node* players = new node[_bufferLength + 1];
         //
-        _fileNum = 1;
 
         //读取文件，初始化所有选手
         int value;
@@ -61,6 +64,7 @@ public:
         LoserTree<node> _spliter;
         _spliter.initTree (players, _bufferLength);
 
+        _fileNum = 1;
         //分割文件
         cout << "开始分割文件：" << endl;
         _totalSize = _bufferLength;
@@ -88,7 +92,7 @@ public:
 
 
             char temp_file_name[50];
-            sprintf (temp_file_name, "temp/%d.txt", players[_spliter.winner ()].index);
+            sprintf (temp_file_name, "winners/%d.txt", players[_spliter.winner ()].index);
 
             cout << players[_spliter.winner ()].value << "添加到文件 " << temp_file_name << endl;
 
@@ -110,7 +114,7 @@ public:
             _countReadDiskOnce ();
 
             char temp_file_name[50];
-            sprintf (temp_file_name, "temp/%d.txt", players[_spliter.winner ()].index);
+            sprintf (temp_file_name, "winners/%d.txt", players[_spliter.winner ()].index);
 
             cout << players[_spliter.winner ()].value << "添加剩余数据到文件"<< temp_file_name << endl;
 
@@ -148,12 +152,14 @@ private:
 
         char a[100];
         for (int i = 1; i <= n; i++) {
-            sprintf (a, "temp/%d.txt", i);
+            sprintf (a, "winners/%d.txt", i);
             remove (a);
         }
 
         cout << ">>>临时文件清空完成：" << endl;
     }
+
+    //模拟读硬盘
     void _countReadDiskOnce () {
         _bufferUsed++;
         if (_bufferUsed > _bufferLength) {
@@ -166,25 +172,29 @@ int externalsort::_bufferUsed = 0;
 
 
 
+//排序过程
 void externalsort::merges () {
-    LoserTree<int> _final_sorter;//用于文件归并排序
+    //分割
+    split ();
+
+    //用于文件归并排序
+    LoserTree<int> _final_sorter;
     cout << "开始合并：" << endl;
     cout << "分割文件个数: " << _fileNum << endl;
     cout << "总数据量: " << _totalSize << endl;
 
-    ifstream* in_files = new ifstream[_fileNum + 1];//打开k个文件输入流
 
-    //打开所有小文件，//出作用域自动关闭文件
+    //打开k个文件输入流
     char a[50];
+    ifstream* in_files = new ifstream[_fileNum + 1];
     for (int i = 1; i <= _fileNum; i++) {
-        sprintf (a, "temp/%d.txt", i);
+        sprintf (a, "winners/%d.txt", i);
         in_files[i].open (a);
         if (!in_files[i].is_open ()) {
-            cout << "open temp file error" << endl;
+            cout << "open winners file error" << endl;
             return;
         }
     }
-
 
     //读入所有文件的头一个数据
     int* da = new int[_fileNum + 1];//头数据数组
@@ -193,7 +203,7 @@ void externalsort::merges () {
     }
 
 
-
+    //初始化合并输着树
     _final_sorter.initTree (da, _fileNum);
 
 
@@ -207,16 +217,19 @@ void externalsort::merges () {
 
             //根据顺串号从相应文件读取下一个数据，若不存在则用INT_MAX代替，替换冠军，重排
             _countReadDiskOnce ();
+
+
+            //获取下一个数字+顺串空判断
             int x;
             if (in_files[winner_file_id] >> x)
                 da[winner_file_id] = x;
             else
                 da[winner_file_id] = INT_MAX;
 
-            //输者树更新
+            //输者树重新比赛
             _final_sorter.replay (winner_file_id);
         }
     }
-    delete[]in_files;
+    delete[] in_files;//删除顺串输入流数组
     cout << "合并完成" << endl;
 }

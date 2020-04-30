@@ -9,7 +9,7 @@ class LoserTree {
 public:
     LoserTree () { tree = nullptr; };
     LoserTree (T* thePlayers, int n) { initTree (thePlayers, n); }            //创建输者树
-    ~LoserTree () { delete[] tree; delete[] temp; } //释放资源
+    ~LoserTree () { delete[] tree; delete[] winners; } //释放资源
 
     void initTree (T* thePlayers, int n) {
         auto _play = [this](int p, int left, int right) ->void {
@@ -17,23 +17,23 @@ public:
             //之后如果p是右孩子节点，则继续举行上一层的比赛
 
             tree[p] = _whoLose (left, right);
-            temp[p] = _whoWin (left, right);
+            winners[p] = _whoWin (left, right);
             //内节点p是右孩子且非根
             while (p % 2 == 1 && p > 1) {
-                tree[p / 2] = _whoLose (temp[p - 1], temp[p]);
-                temp[p / 2] = _whoWin (temp[p - 1], temp[p]);
+                tree[p / 2] = _whoLose (winners[p - 1], winners[p]);
+                winners[p / 2] = _whoWin (winners[p - 1], winners[p]);
 
                 p /= 2;
             }
         };
-        tree = nullptr, temp = nullptr;
+        tree = nullptr, winners = nullptr;
 
         if (n < 2) { return; }
         _players = thePlayers;
         _numOfPlayer = n;
 
         tree = new int[n];
-        temp = new int[n];
+        winners = new int[n];
 
         int i, s;
 
@@ -49,7 +49,7 @@ public:
         //n为奇数时，会出现一个内节点其孩子分别是内节点和外节点
         //先对这个内节点和外节点进行play() 
         if (n % 2 == 1) {
-            _play (n / 2, temp[n - 1], lowExt + 1);
+            _play (n / 2, winners[n - 1], lowExt + 1);
             i = lowExt + 3;
         } else {
             i = lowExt + 2;
@@ -60,62 +60,66 @@ public:
             _play ((i - lowExt + n - 1) / 2, i - 1, i);
 
         //将最终的赢者记录在tree[0]
-        tree[0] = temp[1];
+        tree[0] = winners[1];
     }
 
     //更新结构，thePlayer指向的元素已经被替换
     void replay (int thePlayer) {
         int n = _numOfPlayer;
+        //判断player范围
         if (thePlayer <= 0 || thePlayer > n) {
             cout << "_players index is illgal" << endl;
             return;
         }
 
-        //get the left _players and the right _players
-        int matchPoint;     //左右选手的父亲节点
-        int left, right;     //左右选手
-
-        if (thePlayer <= lowExt) {       //如果变化的节点在最底层
-            matchPoint = (thePlayer + offset) / 2;//获取父节点
-            left = 2 * matchPoint - offset;    // unify to the left _players
+        //获取顺串新元素在树中的新位置
+        int fatherPoint;//左右选手的父亲节点
+        int left, right;//左右选手
+        if (thePlayer <= lowExt) {//如果变化的节点在最底层
+            fatherPoint = (thePlayer + offset) / 2;//获取父节点
+            left = 2 * fatherPoint - offset;    // unify to the left _players
             right = left + 1;
         } else {   //the _players is on the last but one
-            matchPoint = (thePlayer - lowExt + n - 1) / 2;
+            fatherPoint = (thePlayer - lowExt + n - 1) / 2;
             //theplayer的左兄弟是最后一个内部节点
-            if (2 * matchPoint == n - 1) {
-                left = temp[2 * matchPoint];
+            if (2 * fatherPoint == n - 1) {
+                left = winners[2 * fatherPoint];
                 right = thePlayer;
             } else {
-                left = 2 * matchPoint - (n - 1) + lowExt;
+                left = 2 * fatherPoint - (n - 1) + lowExt;
                 right = left + 1;
             }
         }
 
         //重新比赛
-        //重新比赛的选手在之前胜者的位置
-        if (thePlayer == tree[0]) {
-            for (; matchPoint >= 1; matchPoint /= 2) {   //上次比赛的输者已经记录在tree[]中 
-                int loserTemp = _whoLose (tree[matchPoint], thePlayer);
-                temp[matchPoint] = _whoWin (tree[matchPoint], thePlayer);
-                tree[matchPoint] = loserTemp;
-                thePlayer = temp[matchPoint];
+       
+        if (thePlayer == tree[0]) { //重新比赛的选手在之前胜者的位置
+            for (; fatherPoint >= 1; fatherPoint /= 2) {   //上次比赛的输者已经记录在tree[]中 
+                int loserTemp = _whoLose (tree[fatherPoint], thePlayer);//只需跟败者判断
+                winners[fatherPoint] = _whoWin (tree[fatherPoint], thePlayer);
+                tree[fatherPoint] = loserTemp;//父节点放置新的败者
+                thePlayer = winners[fatherPoint];//赢者继续比赛
             }
-        } else {
-            //否则从该节点到根的路径需重新比赛
-            tree[matchPoint] = _whoLose (left, right);  //first game
-            temp[matchPoint] = _whoWin (left, right);
-            if (matchPoint == n - 1 && n % 2 == 1) {   //second game,and it's special
-                matchPoint /= 2;
-                tree[matchPoint] = _whoLose (temp[n - 1], lowExt + 1);  //fisrt game
-                temp[matchPoint] = _whoWin (temp[n - 1], lowExt + 1);
+        } else {//否则，无法判断新节点与老输者的关系，从该节点到根的路径需重新比赛
+            //左右节点比赛
+            tree[fatherPoint] = _whoLose (left, right);  
+            winners[fatherPoint] = _whoWin (left, right);
+            
+            //向上一级
+            if (fatherPoint == n - 1 && n % 2 == 1) {
+                fatherPoint /= 2;
+                tree[fatherPoint] = _whoLose (winners[n - 1], lowExt + 1);
+                winners[fatherPoint] = _whoWin (winners[n - 1], lowExt + 1);
             }
-            matchPoint /= 2;  //then all is back to normal,continue competing
-            for (; matchPoint >= 1; matchPoint /= 2) {
-                tree[matchPoint] = _whoLose (temp[2 * matchPoint], temp[2 * matchPoint + 1]);
-                temp[matchPoint] = _whoWin (temp[2 * matchPoint], temp[2 * matchPoint + 1]);
+
+            fatherPoint /= 2;
+            for (; fatherPoint >= 1; fatherPoint /= 2) {
+                tree[fatherPoint] = _whoLose (winners[2 * fatherPoint], winners[2 * fatherPoint + 1]);
+                winners[fatherPoint] = _whoWin (winners[2 * fatherPoint], winners[2 * fatherPoint + 1]);
             }
         }
-        tree[0] = temp[1];  //place the new winner
+        //保存最终胜者
+        tree[0] = winners[1];
     }
     void output () const {
         for (int i = 0; i < _numOfPlayer; i++) {
@@ -123,11 +127,11 @@ public:
         }
     }
     int* theTree () { return tree; }                //返回输者树
-    int winner () { return temp[1]; }
+    int winner () { return winners[1]; }
 
 private:
     int* tree;       //内部节点，比赛的输者，tree[0]存放的是最终比赛的赢者
-    int* temp;       //存放比赛的赢者
+    int* winners;       //存放比赛的赢者
     T* _players;     //所要比赛的选手(外部节点)
 
     int _numOfPlayer; //选手的个数

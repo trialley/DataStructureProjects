@@ -21,9 +21,6 @@ int main(){
     cin >> size;
     externalsort es(size,filepath);
 
-    //分割
-    es.split();
-
     //进行归并
     es.merges();
     return 0;
