@@ -51,7 +51,8 @@ public:
         if (n % 2 == 1) {
             _play (n / 2, winners[n - 1], lowExt + 1);
             i = lowExt + 3;
-        } else {
+        }
+        else {
             i = lowExt + 2;
         }
 
@@ -79,20 +80,21 @@ public:
             fatherPoint = (thePlayer + offset) / 2;//获取父节点
             left = 2 * fatherPoint - offset;    // unify to the left _players
             right = left + 1;
-        } else {   //the _players is on the last but one
+        }
+        else {   //the _players is on the last but one
             fatherPoint = (thePlayer - lowExt + n - 1) / 2;
             //theplayer的左兄弟是最后一个内部节点
             if (2 * fatherPoint == n - 1) {
                 left = winners[2 * fatherPoint];
                 right = thePlayer;
-            } else {
+            }
+            else {
                 left = 2 * fatherPoint - (n - 1) + lowExt;
                 right = left + 1;
             }
         }
 
         //重新比赛
-       
         if (thePlayer == tree[0]) { //重新比赛的选手在之前胜者的位置
             for (; fatherPoint >= 1; fatherPoint /= 2) {   //上次比赛的输者已经记录在tree[]中 
                 int loserTemp = _whoLose (tree[fatherPoint], thePlayer);//只需跟败者判断
@@ -100,11 +102,10 @@ public:
                 tree[fatherPoint] = loserTemp;//父节点放置新的败者
                 thePlayer = winners[fatherPoint];//赢者继续比赛
             }
-        } else {//否则，无法判断新节点与老输者的关系，从该节点到根的路径需重新比赛
-            //左右节点比赛
-            tree[fatherPoint] = _whoLose (left, right);  
+        }else {//否则，无法判断新节点与老输者的关系，从该节点到根的路径需重新比赛
+            tree[fatherPoint] = _whoLose (left, right);
             winners[fatherPoint] = _whoWin (left, right);
-            
+
             //向上一级
             if (fatherPoint == n - 1 && n % 2 == 1) {
                 fatherPoint /= 2;
@@ -130,11 +131,11 @@ public:
     int winner () { return winners[1]; }
 
 private:
-    int* tree;       //内部节点，比赛的输者，tree[0]存放的是最终比赛的赢者
-    int* winners;       //存放比赛的赢者
-    T* _players;     //所要比赛的选手(外部节点)
+    int* tree;       //输者树内部节点
+    int* winners;    //存放赢者
 
-    int _numOfPlayer; //选手的个数
+    T* _players;     //输者树外部节点
+    int _numOfPlayer;//选手的个数
 
     int lowExt;      //2*(n-s),最底层外部节点的个数,s=2^(log2(n-1))
                      //s为最底层最左端的内部节点的位置

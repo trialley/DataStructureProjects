@@ -218,7 +218,6 @@ void externalsort::merges () {
             //根据顺串号从相应文件读取下一个数据，若不存在则用INT_MAX代替，替换冠军，重排
             _countReadDiskOnce ();
 
-
             //获取下一个数字+顺串空判断
             int x;
             if (in_files[winner_file_id] >> x)
