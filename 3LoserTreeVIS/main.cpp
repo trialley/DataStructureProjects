@@ -17,14 +17,12 @@ using namespace std;
 
 */
 int main () {
-
-
-
     int* tobesort = new int[100];
     for (int i = 0; i < 10; ++i) {
         tobesort[i] = i;
     }
     LoserTree<int> tree;
+
     tree.initTree (tobesort, 10);
 
 

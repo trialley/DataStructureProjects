@@ -1,15 +1,16 @@
 ﻿#pragma warning(disable:4996)
-#include <stdio.h>
+#include <cstdio>
 #include<iostream>
+#include <cmath>
+#include <iomanip>
 //#define OS_TYPE_WINDOWS_CC
 #include"ColorfulConsoleIO.h"
-#include <math.h>
-#include <iomanip>
+
 void ChessBoard(int tr, int tc, int dr, int dc, int size);
 void OutputBoard(int size);
 
-int  tile = 1;
-int  Board[1025][1025];
+int  total_num = 1;             //表示三格板编号，最终等于三格板总数量
+int  Board[2048+10][2048+10];   //表示棋盘，每格数值为三格板编号
 int main(){
     int n, a, b;
     std::cout << R"(  _____ _                   ____                      _ 
@@ -42,14 +43,14 @@ int main(){
 //残缺棋盘的递归程序
 void ChessBoard(int tr, int tc, int dr, int dc, int size){
     if (size == 1) return;
-    int num = tile++;    //所使用的三格板的编号
+    int num = total_num++;    //所使用的三格板的编号
     int sub_size = size / 2;//象限大小
     
     //对于左上象限
     if (dr < tr + sub_size && dc < tc + sub_size) {//残缺方格位于本象限
         ChessBoard(tr, tc, dr, dc, sub_size);
     }else{//本象限中没有残缺方格, 把三格板num号放在右下角，这样四个象限均有一个残缺
-        Board[tr + sub_size - 1][tc + sub_size - 1] = num;
+        Board[tr + sub_size - 1][tc + sub_size - 1] = 1;
         ChessBoard(tr, tc, tr + sub_size - 1, tc + sub_size - 1, sub_size);
     }
     
@@ -57,7 +58,7 @@ void ChessBoard(int tr, int tc, int dr, int dc, int size){
     if (dr < tr + sub_size && dc >= tc + sub_size) {//残缺方格位于本象限
         ChessBoard(tr, tc + sub_size, dr, dc, sub_size);
     }else {    //本象限中没有残缺方格, 把三格板t放在左下角
-        Board[tr + sub_size - 1][tc + sub_size] = num;
+        Board[tr + sub_size - 1][tc + sub_size] = 2;
         ChessBoard(tr, tc + sub_size, tr + sub_size - 1, tc + sub_size, sub_size);
     }
     
@@ -65,7 +66,7 @@ void ChessBoard(int tr, int tc, int dr, int dc, int size){
     if (dr >= tr + sub_size && dc < tc + sub_size) {
         ChessBoard(tr + sub_size, tc, dr, dc, sub_size);
     }else{
-        Board[tr + sub_size][tc + sub_size - 1] = num;
+        Board[tr + sub_size][tc + sub_size - 1] = 3;
         ChessBoard(tr + sub_size, tc, tr + sub_size, tc + sub_size - 1, sub_size);
     }
     
@@ -73,7 +74,7 @@ void ChessBoard(int tr, int tc, int dr, int dc, int size){
     if (dr >= tr + sub_size && dc >= tc + sub_size) {
         ChessBoard(tr + sub_size, tc + sub_size, dr, dc, sub_size);
     }else{
-        Board[tr + sub_size][tc + sub_size] = num;
+        Board[tr + sub_size][tc + sub_size] = 4;
         ChessBoard(tr + sub_size, tc + sub_size, tr + sub_size, tc + sub_size, sub_size);
     }
 }
